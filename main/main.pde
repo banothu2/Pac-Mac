@@ -32,7 +32,7 @@ void draw(){
   
   
   fill(255);
-  text("Score: " + pacman.score, 0, 800);
+  text("Score: " + pacman.movement_direction, 0, 800);
 }
 
 void move_randomly(){
@@ -66,6 +66,6 @@ void keyPressed() {
   } else if (key == 'p') {
       paused = !paused;
   } else if (key == 'r') {
-    random_move = true;
+    random_move = !random_move;
   }
 }
