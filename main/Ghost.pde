@@ -1,21 +1,20 @@
-class PacMan {
+class Ghost {
   int x;
   int y; 
   int r; 
-  float w;                      // Cell size (pixels)
-  int score;
-  PacMan(){
-    x = 13;
-    y = 23;
+  float w;
+  int type;
+  
+  Ghost(int _type){
+    x = 14;
+    y = 14;
     r = 20;
     w = 25;
-    score = -1;
-    consume();
+    type = _type;
   }
   
   void update(int _x, int _y){
     move(_x, _y);
-    consume();
   }
  
   void move(int _x, int _y){
@@ -35,15 +34,9 @@ class PacMan {
     }    
   }
   
-  void consume(){
-    if(map.level_one[y][x] == 2){
-      map.level_one[y][x] = 0;
-      score = score + 1;
-    }
-  }
-  
   void display(){
-    fill(255, 255, 0);
+    fill(255, 0, 0);
     ellipse(x*w+(w/2), y*w+(w/2), r, r);    
   }
-}  
+}
+
