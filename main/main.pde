@@ -12,13 +12,14 @@
 */
 
 Map map;
-//Ghost blinky; 
+Ghost blinky; 
 PacMan pacman;
+
 boolean random_move = false;
 void setup(){
   map = new Map();
   pacman = new PacMan();
-  //blinky = new Ghost(1);
+  blinky = new Ghost(0, 14, 14, 20, 25);
   size(700, 900);
 }
 
@@ -26,13 +27,13 @@ void draw(){
   background(0);
   map.display();
   pacman.display(); 
-  //blinky.display();
+  blinky.display();
+  blinky.attack();
   
   move_randomly();
   
-  
   fill(255);
-  text("Score: " + pacman.movement_direction, 0, 800);
+  text("Score: " + pacman.score, 0, 800);
 }
 
 void move_randomly(){
@@ -42,7 +43,6 @@ void move_randomly(){
     if(x_dir == 0 || y_dir == 0){
       pacman.update(x_dir, y_dir); 
     } 
-    
 //    x_dir = int(random(-2, 2));
 //    y_dir = int(random(-2, 2));
 //    if(x_dir == 0 || y_dir == 0){

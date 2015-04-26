@@ -3,13 +3,13 @@ class Ghost {
   int y; 
   int r; 
   float w;
-  int type;
+  int type;                 // Red = 0, Pink = 1, Blue = 2, Green = 3
   
-  Ghost(int _type){
-    x = 14;
-    y = 14;
-    r = 20;
-    w = 25;
+  Ghost(int _type, int _x, int _y, int _r, float _w){
+    x = _x;
+    y = _x;
+    r = _r;
+    w = _w;
     type = _type;
   }
   
@@ -17,6 +17,24 @@ class Ghost {
     move(_x, _y);
   }
  
+  void attack(){
+    switch(type){
+      case 0: 
+        blinky();
+        break;
+      case 1:
+        break;
+      case 2:
+        break;
+      case 3: 
+        break;
+    } 
+  }
+  
+  void blinky(){
+    
+  }  
+    
   void move(int _x, int _y){
     int new_x = x + _x;
     int new_y = y + _y;
