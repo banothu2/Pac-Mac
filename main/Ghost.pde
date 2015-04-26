@@ -43,6 +43,7 @@ class Ghost {
 //nodes in master branch to value 3 at intersections so ghost knows when to turn, already did this in local file but haven't
 //upadted master... any suggestions on how to fix the move command, or if my code is wrong? 
  
+//Yo don't understand this attack code, what's the furpose of the case function?
   void attack(){
     switch(type){
       case 0: 
