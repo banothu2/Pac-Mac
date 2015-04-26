@@ -16,6 +16,32 @@ class Ghost {
   void update(int _x, int _y){
     move(_x, _y);
   }
+  
+  /*modified by Edgar
+    void update(int _x, int _y, int _type){
+    pacman_location= new PVector(pacman.x,pacman.y);
+    ghost_location = new PVector(x,y);
+    ghost_target= new PVector(0,0);
+    PVector difference = new PVector(0,0);
+    difference = PVector.sub(pacman_location,ghost_location);
+    if(type==1&&map.level_one[x][y]==3||map.level_one[x][y]==0){
+      ghost_target = difference;
+      ghost_target.normalize();
+      if(abs(ghost_target.x)>abs(ghost_target.y)){
+        if(ghost_target.x>0){move(1,0);}
+        else move(-1,0);}
+      }
+      else{
+        if(ghost_target.y>0){move(0,-1);}
+        else move(0,1);
+      }
+    
+  }
+*/  
+//end of modification
+//in theory modification should guide ghost towards pacman, but move control is not responding as expected. Also need to modify
+//nodes in master branch to value 3 at intersections so ghost knows when to turn, already did this in local file but haven't
+//upadted master... any suggestions on how to fix the move command, or if my code is wrong? 
  
   void attack(){
     switch(type){
