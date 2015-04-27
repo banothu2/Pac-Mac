@@ -4,7 +4,7 @@ class Ghost {
   int r; 
   float w;
   int type;                 // Red = 0, Pink = 1, Blue = 2, Green = 3
-  
+  int prex, prey; //used so ghost follows a command till it reaches intersection
   Ghost(int _type, int _x, int _y, int _r, float _w){
     x = _x;
     y = _x;
@@ -18,24 +18,26 @@ class Ghost {
   }
   
   /*modified by Edgar
-    void update(int _x, int _y, int _type){
+ void update( int _type){
     pacman_location= new PVector(pacman.x,pacman.y);
     ghost_location = new PVector(x,y);
     ghost_target= new PVector(0,0);
     PVector difference = new PVector(0,0);
+    
     difference = PVector.sub(pacman_location,ghost_location);
     if(type==1&&map.level_one[x][y]==3||map.level_one[x][y]==0){
       ghost_target = difference;
       ghost_target.normalize();
       if(abs(ghost_target.x)>abs(ghost_target.y)){
-        if(ghost_target.x>0){move(1,0);}
-        else move(-1,0);}
+        if(ghost_target.x>0){prex=1;prey=0;}
+        else {prex=-1; prey=0;}}
       }
       else{
-        if(ghost_target.y>0){move(0,-1);}
-        else move(0,1);
+        if(ghost_target.y>0){prex=0;prey=1;}
+        else {prex=0;prey=-1;}
       }
-    
+      
+  move(prex,prey);  
   }
 */  
 //end of modification
@@ -43,7 +45,7 @@ class Ghost {
 //nodes in master branch to value 3 at intersections so ghost knows when to turn, already did this in local file but haven't
 //upadted master... any suggestions on how to fix the move command, or if my code is wrong? 
  
-//Yo don't understand this attack code, what's the furpose of the case function?
+//Yo don't understand this attack code, what's the purpose of the case function?
   void attack(){
     switch(type){
       case 0: 
