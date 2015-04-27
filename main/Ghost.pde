@@ -18,25 +18,29 @@ class Ghost {
   }
   
   /*modified by Edgar
- void update( int _type){
+   void update( int _type){
     pacman_location= new PVector(pacman.x,pacman.y);
     ghost_location = new PVector(x,y);
     ghost_target= new PVector(0,0);
     PVector difference = new PVector(0,0);
     
-    difference = PVector.sub(pacman_location,ghost_location);
-    if(type==1&&map.level_one[x][y]==3||map.level_one[x][y]==0){
+    difference = PVector.sub(ghost_location,pacman_location);
+    if(type==1 && map.level_one[x][y]==3 || map.level_one[x][y]==0){
       ghost_target = difference;
       ghost_target.normalize();
       if(abs(ghost_target.x)>abs(ghost_target.y)){
-        if(ghost_target.x>0){prex=1;prey=0;}
-        else {prex=-1; prey=0;}}
+        if(ghost_target.x>0&&map.level_one[x+1][y]!=1){prex=1;prey=0;}
+        else if(ghost_target.x<0&&map.level_one[x-1][y]!=1){prex=-1; prey=0;}
+        else if(map.level_one[x+1][y]!=1){prex=1;prey=0;}
+        else {prex=1;prey=0;}
       }
       else{
-        if(ghost_target.y>0){prex=0;prey=1;}
-        else {prex=0;prey=-1;}
+        if(ghost_target.y>0&&map.level_one[x][y-1]!=1){prex=0;prey=-1;}
+        else if(ghost_target.y<0&&map.level_one[x][y+1]!=1) {prex=0;prey=1;}
+        else if(map.level_one[x][y-1]!=1){prex=0;prey=-1;}
+        else {prex=0;prey=1;}
       }
-      
+    }
   move(prex,prey);  
   }
 */  
