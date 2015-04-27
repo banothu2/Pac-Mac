@@ -18,19 +18,18 @@ class Ghost {
   }
   
   /*modified by Edgar
-   void update( int _type){
+  void update( int _type){
     pacman_location= new PVector(pacman.x,pacman.y);
     ghost_location = new PVector(x,y);
     ghost_target= new PVector(0,0);
     PVector difference = new PVector(0,0);
-    
     difference = PVector.sub(ghost_location,pacman_location);
     if(type==1 && map.level_one[x][y]==3 || map.level_one[x][y]==0){
       ghost_target = difference;
       ghost_target.normalize();
       if(abs(ghost_target.x)>abs(ghost_target.y)){
-        if(ghost_target.x>0&&map.level_one[x+1][y]!=1){prex=1;prey=0;}
-        else if(ghost_target.x<0&&map.level_one[x-1][y]!=1){prex=-1; prey=0;}
+        if(ghost_target.x<0&&map.level_one[x+1][y]!=1){prex=1;prey=0;}
+        else if(ghost_target.x>0&&map.level_one[x-1][y]!=1){prex=-1; prey=0;}
         else if(map.level_one[x+1][y]!=1){prex=1;prey=0;}
         else {prex=1;prey=0;}
       }
@@ -43,11 +42,14 @@ class Ghost {
     }
   move(prex,prey);  
   }
+  }
 */  
 //end of modification
-//in theory modification should guide ghost towards pacman, but move control is not responding as expected. Also need to modify
+//Update 1:in theory modification should guide ghost towards pacman, but move control is not responding as expected. Also need to modify
 //nodes in master branch to value 3 at intersections so ghost knows when to turn, already did this in local file but haven't
-//upadted master... any suggestions on how to fix the move command, or if my code is wrong? 
+//upadted master... any suggestions on how to fix the move command, or if my code is wrong?
+//Update 2: Working better, need to tweak a few conditional statements, what if pacman_location = ghost_location, speed of ghost, etc. 
+//If anyone needs me to update the map let me know, don't want to do it yet because I don't want to create confusion
  
 //Yo don't understand this attack code, what's the purpose of the case function?
   void attack(){
