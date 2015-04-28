@@ -29,7 +29,8 @@ void draw(){
   map.display();
   pacman.display(); 
   blinky.display();
-  blinky.attack();
+  if((frameCount % 30) == 0 )
+    blinky.attack();
   
   move_randomly();
   

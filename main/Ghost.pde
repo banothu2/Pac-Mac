@@ -162,6 +162,7 @@ class Ghost {
   void move(int _x, int _y){
     int new_x = x + _x;
     int new_y = y + _y;
+    //Tunnel
       if(x == 27 && y == 14 && _x == 1){
         x = 0;
         y = 14;
