@@ -19,12 +19,13 @@ boolean random_move = false;
 void setup(){
   map = new Map();
   pacman = new PacMan();
-  blinky = new Ghost(0, 14, 14, 20, 25);
+  blinky = new Ghost(0, 1, 1, 20, 25);
   size(700, 900);
 }
 
 void draw(){
   background(0);
+  stroke(0);
   map.display();
   pacman.display(); 
   blinky.display();
@@ -32,7 +33,7 @@ void draw(){
   
   move_randomly();
   
-  fill(255);
+  //fill(255);
   text("Score: " + pacman.score, 0, 800);
 }
 

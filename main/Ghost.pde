@@ -2,10 +2,11 @@ class Ghost {
   int x;
   int y; 
   int r; 
-  float w;
+  int w;
   int type;                 // Red = 0, Pink = 1, Blue = 2, Green = 3
   int prex, prey; //used so ghost follows a command till it reaches intersection
-  Ghost(int _type, int _x, int _y, int _r, float _w){
+  int padding; 
+  Ghost(int _type, int _x, int _y, int _r, int _w){
     x = _x;
     y = _x;
     r = _r;
@@ -17,41 +18,6 @@ class Ghost {
     move(_x, _y);
   }
   
-  /*modified by Edgar
-  void update( int _type){
-    pacman_location= new PVector(pacman.x,pacman.y);
-    ghost_location = new PVector(x,y);
-    ghost_target= new PVector(0,0);
-    PVector difference = new PVector(0,0);
-    difference = PVector.sub(ghost_location,pacman_location);
-    if(type==1 && map.level_one[x][y]==3 || map.level_one[x][y]==0){
-      ghost_target = difference;
-      ghost_target.normalize();
-      if(abs(ghost_target.x)>abs(ghost_target.y)){
-        if(ghost_target.x<0&&map.level_one[x+1][y]!=1){prex=1;prey=0;}
-        else if(ghost_target.x>0&&map.level_one[x-1][y]!=1){prex=-1; prey=0;}
-        else if(map.level_one[x+1][y]!=1){prex=1;prey=0;}
-        else {prex=1;prey=0;}
-      }
-      else{
-        if(ghost_target.y>0&&map.level_one[x][y-1]!=1){prex=0;prey=-1;}
-        else if(ghost_target.y<0&&map.level_one[x][y+1]!=1) {prex=0;prey=1;}
-        else if(map.level_one[x][y-1]!=1){prex=0;prey=-1;}
-        else {prex=0;prey=1;}
-      }
-    }
-  move(prex,prey);  
-  }
-  }
-*/  
-//end of modification
-//Update 1:in theory modification should guide ghost towards pacman, but move control is not responding as expected. Also need to modify
-//nodes in master branch to value 3 at intersections so ghost knows when to turn, already did this in local file but haven't
-//upadted master... any suggestions on how to fix the move command, or if my code is wrong?
-//Update 2: Working better, need to tweak a few conditional statements, what if pacman_location = ghost_location, speed of ghost, etc. 
-//If anyone needs me to update the map let me know, don't want to do it yet because I don't want to create confusion
- 
-//Yo don't understand this attack code, what's the purpose of the case function?
   void attack(){
     switch(type){
       case 0: 
@@ -66,10 +32,133 @@ class Ghost {
     } 
   }
   
+  /*void blinky(){
+    PVector pacman_location, ghost_location, ghost_target, difference;
+    pacman_location = new PVector(pacman.x,pacman.y);
+    ghost_location  = new PVector(x,y);
+    ghost_target    = new PVector(0,0);
+    difference      = new PVector(0,0);
+    
+    difference      = PVector.sub(ghost_location, pacman_location);
+    
+    if(type == 1 && map.intersections[x][y] == 3 || map.intersections[x][y] == 0){
+      ghost_target = difference;
+      ghost_target.normalize();
+      if (abs(ghost_target.x) > abs(ghost_target.y)){
+        if (ghost_target.x<0 && map.intersections[x+1][y]!=1 ){
+          prex=1;prey=0;
+        } else if ( ghost_target.x>0 && map.intersections[x-1][y]!=1 ){
+          prex=-1; prey=0;
+        } else if ( map.intersections[x+1][y]!=1 ){
+          prex=1;prey=0;
+        } else {
+          prex=1;prey=0;
+        }
+      }
+      else{
+        if (ghost_target.y>0 && map.intersections[x][y-1]!=1){
+          prex=0;
+          prey=-1;
+        } else if (ghost_target.y<0 && map.intersections[x][y+1]!=1){
+          prex=0;
+          prey=1;
+        } else if (map.intersections[x][y-1]!=1){
+          prex=0;
+          prey=-1;
+        } else {
+          prex=0;
+          prey=1;
+        }
+      }
+    }
+    move(prex,prey);  
+  }*/
+
   void blinky(){
+    PVector pacman_location, ghost_location, ghost_target, difference;
+    pacman_location = new PVector(pacman.x,pacman.y);
+    ghost_location  = new PVector(x,y);
+    ghost_target    = new PVector(0,0);
+    difference      = new PVector(0,0);
+    // Gets the vector that points from Ghost to Pacman
+    //difference      = PVector.sub(pacman_location, ghost_location);
+    difference        = PVector.sub(ghost_location, pacman_location);
     
-  }  
     
+    stroke(0, 255, 0);
+    line(pacman_location.x*w + (w/2), pacman_location.y*w + (w/2), ghost_location.x*w + (w/2), ghost_location.y*w + (w/2));
+    //line(ghost_location.x, ghost_location.y, ghost_location.x + difference.x, ghost_location.y + difference.y);
+    noStroke();
+
+    // Intersection or box - Ghost gets a new target
+    if(map.intersections[y][x] == 3 || map.intersections[y][x] == 0){
+      ghost_target = difference;
+      ghost_target.normalize();
+      // If x component is larger than y, it should move horizontally. 
+      if (abs(ghost_target.x) > abs(ghost_target.y)){
+        if (ghost_target.x < 0 && map.intersections[y+1][x] != 1 ){
+          prex = 0;
+          prey = 0;
+        } else if ( ghost_target.x > 0 && map.intersections[y-1][x] != 1 ){
+          prex = 0; 
+          prey = 0;
+        } else if ( map.intersections[y+1][x]!=1 ){
+          prex = 0;
+          prey = 0;
+        } else {
+          prex = 0;
+          prey = 0;
+        }
+      } else {
+        if (ghost_target.y>0 && map.intersections[x][y-1]!=1){
+          prex = 0;
+          prey = 0;
+        } else if (ghost_target.y<0 && map.intersections[x][y+1]!=1){
+          prex = 0;
+          prey = 0;
+        } else if (map.intersections[x][y-1]!=1){
+          prex = 0;
+          prey = 0;
+        } else {
+          prex = 0;
+          prey = 0;
+        }
+      }
+    }
+    // 
+    move(prex,prey);  
+  }
+      
+/*
+
+  void blinky(){
+    PVector pacman_location, ghost_location, ghost_target, difference;
+    pacman_location = new PVector(pacman.x,pacman.y);
+    ghost_location  = new PVector(x,y);
+    ghost_target    = new PVector(0,0);
+    difference      = new PVector(0,0);
+    // Gets the vector that points from Ghost to Pacman
+    difference      = PVector.sub(pacman_location, ghost_location);
+    
+    if(map.intersections[y][x] == 3 || map.intersections[y][x] == 0){
+      ghost_target = difference;
+      ghost_target.normalize();
+      if (abs(ghost_target.x) > abs(ghost_target.y)){
+        if (ghost_target.x < 0 && map.intersections[y+1][x]!=1 ){
+          prex=1;prey=0;
+        } else if ( ghost_target.x>0 && map.intersections[y-1][x]!=1 ){
+          prex=-1; prey=0;
+        } else if ( map.intersections[y+1][x]!=1 ){
+          prex=1;prey=0;
+        } else {
+          prex=1;prey=0;
+        }
+      }
+    }
+    move(prex,prey);  
+  }*/
+      
+      
   void move(int _x, int _y){
     int new_x = x + _x;
     int new_y = y + _y;
