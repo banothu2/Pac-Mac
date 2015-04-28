@@ -106,5 +106,11 @@ class PacMan {
 
     ellipse(x*w+(w/2) + transition_x, y*w+(w/2) + transition_y, r, r);
   }
+  
+    void reset(){
+  x=13;
+  y=23;
+  }
+  
 }  
 
