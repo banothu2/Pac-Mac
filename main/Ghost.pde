@@ -81,6 +81,7 @@ class Ghost {
     ghost_location  = new PVector(x,y);
     ghost_target    = new PVector(0,0);
     difference      = new PVector(0,0);
+    if(pacman_location.equals(ghost_location)){pacman.reset();}
     // Gets the vector that points from Ghost to Pacman
     //difference      = PVector.sub(pacman_location, ghost_location);
     difference        = PVector.sub(ghost_location, pacman_location);
@@ -96,19 +97,20 @@ class Ghost {
       ghost_target = difference;
       ghost_target.normalize();
       // If x component is larger than y, it should move horizontally. 
-        if (abs(ghost_target.x) > abs(ghost_target.y)){
+      if (abs(ghost_target.x) > abs(ghost_target.y)){
         if (ghost_target.x > 0 && map.intersections[y][x-1] != 1 ){
           prex = -1;
           prey = 0;
         } else if ( ghost_target.x < 0 && map.intersections[y][x+1] != 1 ){
           prex = 1; 
           prey = 0;
-        } else if ( map.intersections[y+1][x]!=1 ){
+        } 
+        else if (ghost_target.y > 0 && map.intersections[y-1][x]!=1){
           prex = 0;
-          prey = 0;
-        } else {
+          prey = -1;
+        } else if (ghost_target.y<0 && map.intersections[y+1][x]!=1){
           prex = 0;
-          prey = 0;
+          prey = 1;
         }
       } else {
         if (ghost_target.y > 0 && map.intersections[y-1][x]!=1){
@@ -117,17 +119,36 @@ class Ghost {
         } else if (ghost_target.y<0 && map.intersections[y+1][x]!=1){
           prex = 0;
           prey = 1;
-        } else if (map.intersections[x][y-1]!=1){
-          prex = 0;
-          prey = 0;
-        } else {
-          prex = 0;
-          prey = 0;
         }
+        else if (ghost_target.x > 0 && map.intersections[y][x-1] != 1 ){
+          prex = -1;
+          prey = 0;
+        } else if ( ghost_target.x < 0 && map.intersections[y][x+1] != 1 ){
+          prex = 1; 
+          prey = 0;
+        } 
       }
     }
     // 
     move(prex,prey);  
+        if(prex==1){
+      text("right",100,800);
+    }
+    if(prex==-1){
+      text("left",100,800);
+    }
+    if(prex==0){
+      text(0,100,800);
+    }
+    if(prey==1){
+      text("down",100,850);
+    }
+    if(prey==-1){
+      text("up",100,850);
+    }
+    if(prey==0){
+      text(0,100,850);
+    }
   }
       
   void pinky(){
