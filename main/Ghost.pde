@@ -130,6 +130,24 @@ class Ghost {
     }
     // 
     move(prex,prey);  
+        if(prex==1){
+      text("right",100,800);
+    }
+    if(prex==-1){
+      text("left",100,800);
+    }
+    if(prex==0){
+      text(0,100,800);
+    }
+    if(prey==1){
+      text("down",100,850);
+    }
+    if(prey==-1){
+      text("up",100,850);
+    }
+    if(prey==0){
+      text(0,100,850);
+    }
   }
       
 /*
