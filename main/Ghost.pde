@@ -95,12 +95,12 @@ class Ghost {
       ghost_target = difference;
       ghost_target.normalize();
       // If x component is larger than y, it should move horizontally. 
-      if (abs(ghost_target.x) > abs(ghost_target.y)){
-        if (ghost_target.x < 0 && map.intersections[y+1][x] != 1 ){
-          prex = 0;
+        if (abs(ghost_target.x) > abs(ghost_target.y)){
+        if (ghost_target.x > 0 && map.intersections[y][x-1] != 1 ){
+          prex = -1;
           prey = 0;
-        } else if ( ghost_target.x > 0 && map.intersections[y-1][x] != 1 ){
-          prex = 0; 
+        } else if ( ghost_target.x < 0 && map.intersections[y][x+1] != 1 ){
+          prex = 1; 
           prey = 0;
         } else if ( map.intersections[y+1][x]!=1 ){
           prex = 0;
@@ -110,12 +110,12 @@ class Ghost {
           prey = 0;
         }
       } else {
-        if (ghost_target.y>0 && map.intersections[x][y-1]!=1){
+        if (ghost_target.y > 0 && map.intersections[y-1][x]!=1){
           prex = 0;
-          prey = 0;
-        } else if (ghost_target.y<0 && map.intersections[x][y+1]!=1){
+          prey = -1;
+        } else if (ghost_target.y<0 && map.intersections[y+1][x]!=1){
           prex = 0;
-          prey = 0;
+          prey = 1;
         } else if (map.intersections[x][y-1]!=1){
           prex = 0;
           prey = 0;
