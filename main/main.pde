@@ -12,7 +12,7 @@
 */
 
 Map map;
-Ghost blinky; 
+Ghost blinky, pinky; 
 PacMan pacman;
 
 boolean random_move = false;
@@ -20,6 +20,7 @@ void setup(){
   map = new Map();
   pacman = new PacMan();
   blinky = new Ghost(0, 1, 1, 20, 25);
+  pinky = new Ghost(1, 11, 13, 20, 25);
   size(700, 900);
 }
 
@@ -29,8 +30,12 @@ void draw(){
   map.display();
   pacman.display(); 
   blinky.display();
-  if((frameCount % 30) == 0 )
+  pinky.display();
+  if((frameCount % 30) == 0 ){
     blinky.attack();
+    pinky.attack();
+  }
+    
   
   move_randomly();
   

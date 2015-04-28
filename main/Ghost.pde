@@ -24,6 +24,7 @@ class Ghost {
         blinky();
         break;
       case 1:
+        pinky();
         break;
       case 2:
         break;
@@ -129,6 +130,105 @@ class Ghost {
     move(prex,prey);  
   }
       
+  void pinky(){
+    PVector pacman_location, ghost_location, ghost_target, difference;
+    pacman_location = new PVector(pacman.x,pacman.y);
+    
+    switch (pacman.movement_direction){
+      case 0:
+        if(map.intersections[pacman.x][pacman.y - 1] == 1)
+          ghost_target = new PVector(pacman.x, pacman.y);
+        else if(map.intersections[pacman.x][pacman.y - 2] == 1)
+          ghost_target = new PVector(pacman.x, pacman.y - 1);
+        else if(map.intersections[pacman.x][pacman.y - 3] == 1)
+          ghost_target = new PVector(pacman.x, pacman.y - 2);
+        else if(map.intersections[pacman.x][pacman.y - 4] == 1)
+          ghost_target = new PVector(pacman.x, pacman.y - 3);
+        else
+          ghost_target = new PVector(pacman.x, pacman.y - 4);
+        break;
+      case 1:
+        if(map.intersections[pacman.x][pacman.y + 1] == 1)
+          ghost_target = new PVector(pacman.x, pacman.y);
+        else if(map.intersections[pacman.x][pacman.y + 2] == 1)
+          ghost_target = new PVector(pacman.x, pacman.y + 1);
+        else if(map.intersections[pacman.x][pacman.y + 3] == 1)
+          ghost_target = new PVector(pacman.x, pacman.y + 2);
+        else if(map.intersections[pacman.x][pacman.y + 4] == 1)
+          ghost_target = new PVector(pacman.x, pacman.y + 3);
+        else
+          ghost_target = new PVector(pacman.x, pacman.y + 4);
+        break;
+      case 2:
+        if(map.intersections[pacman.x - 1][pacman.y] == 1)
+          ghost_target = new PVector(pacman.x, pacman.y);
+        else if(map.intersections[pacman.x - 2][pacman.y] == 1)
+          ghost_target = new PVector(pacman.x - 1, pacman.y - 1);
+        else if(map.intersections[pacman.x - 3][pacman.y] == 1)
+          ghost_target = new PVector(pacman.x - 2, pacman.y);
+        else if(map.intersections[pacman.x - 4][pacman.y] == 1)
+          ghost_target = new PVector(pacman.x - 3, pacman.y);
+        else
+          ghost_target = new PVector(pacman.x - 4, pacman.y);
+        break;
+      case 3:
+        if(map.intersections[pacman.x + 1][pacman.y] == 1)
+          ghost_target = new PVector(pacman.x, pacman.y);
+        else if(map.intersections[pacman.x + 2][pacman.y] == 1)
+          ghost_target = new PVector(pacman.x + 1, pacman.y);
+        else if(map.intersections[pacman.x + 3][pacman.y] == 1)
+          ghost_target = new PVector(pacman.x + 2, pacman.y);
+        else if(map.intersections[pacman.x + 4][pacman.y] == 1)
+          ghost_target = new PVector(pacman.x + 3, pacman.y);
+        else
+          ghost_target = new PVector(pacman.x + 4, pacman.y);
+        break;
+      default:
+        ghost_target = new PVector(pacman.x, pacman.y);
+        break;
+    }
+    
+    stroke(150, 250, 0);
+    line(pacman_location.x*w + (w/2), pacman_location.y*w + (w/2), x*w + (w/2), y*w + (w/2));
+    //line(ghost_location.x, ghost_location.y, ghost_location.x + difference.x, ghost_location.y + difference.y);
+    noStroke();    
+    
+      // Intersection or box - Ghost gets a new target
+    if(map.intersections[y][x] == 3 || map.intersections[y][x] == 0){
+      // If x component is larger than y, it should move horizontally. 
+        if (abs(ghost_target.x) > abs(ghost_target.y)){
+        if (ghost_target.x > 0 && map.intersections[y][x-1] != 1 ){
+          prex = -1;
+          prey = 0;
+        } else if ( ghost_target.x < 0 && map.intersections[y][x+1] != 1 ){
+          prex = 1; 
+          prey = 0;
+        } else if ( map.intersections[y+1][x]!=1 ){
+          prex = 0;
+          prey = 0;
+        } else {
+          prex = 0;
+          prey = 0;
+        }
+      } else {
+        if (ghost_target.y > 0 && map.intersections[y-1][x]!=1){
+          prex = 0;
+          prey = -1;
+        } else if (ghost_target.y<0 && map.intersections[y+1][x]!=1){
+          prex = 0;
+          prey = 1;
+        } else if (map.intersections[x][y-1]!=1){
+          prex = 0;
+          prey = 0;
+        } else {
+          prex = 0;
+          prey = 0;
+        }
+      }
+    }
+    // 
+    move(prex,prey);  
+  }
 /*
 
   void blinky(){
