@@ -80,6 +80,7 @@ class Ghost {
     ghost_location  = new PVector(x,y);
     ghost_target    = new PVector(0,0);
     difference      = new PVector(0,0);
+    if(pacman_location.equals(ghost_location)){pacman.reset();}
     // Gets the vector that points from Ghost to Pacman
     //difference      = PVector.sub(pacman_location, ghost_location);
     difference        = PVector.sub(ghost_location, pacman_location);
