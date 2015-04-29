@@ -8,7 +8,7 @@ class Ghost {
   int padding; 
   Ghost(int _type, int _x, int _y, int _r, int _w){
     x = _x;
-    y = _x;
+    y = _y;
     r = _r;
     w = _w;
     type = _type;
@@ -154,6 +154,7 @@ class Ghost {
   void pinky(){
     PVector pacman_location, ghost_location, ghost_target, difference;
     pacman_location = new PVector(pacman.x,pacman.y);
+    ghost_location  = new PVector(x,y);
     
     switch (pacman.movement_direction){
       case 0:
@@ -215,40 +216,70 @@ class Ghost {
     noStroke();    
     
       // Intersection or box - Ghost gets a new target
+     // Intersection or box - Ghost gets a new target
     if(map.intersections[y][x] == 3 || map.intersections[y][x] == 0){
-      // If x component is larger than y, it should move horizontally. 
-        if (abs(ghost_target.x) > abs(ghost_target.y)){
-        if (ghost_target.x > 0 && map.intersections[y][x-1] != 1 ){
+      // If x component is larger than y, it should move horizontally.
+     ghost_target =  PVector.sub(ghost_location, ghost_target);
+      if (abs(ghost_target.x) > abs(ghost_target.y)){
+        if (ghost_target.x > 0 && map.intersections[y][x-1] != 1 
+            && map.intersections[y][x-1] != 0){
           prex = -1;
           prey = 0;
-        } else if ( ghost_target.x < 0 && map.intersections[y][x+1] != 1 ){
+        } else if ( ghost_target.x < 0 && map.intersections[y][x+1] != 1 
+             && map.intersections[y][x+1] != 0){
           prex = 1; 
           prey = 0;
-        } else if ( map.intersections[y+1][x]!=1 ){
-          prex = 0;
-          prey = 0;
-        } else {
-          prex = 0;
-          prey = 0;
-        }
-      } else {
-        if (ghost_target.y > 0 && map.intersections[y-1][x]!=1){
+        } 
+        else if (ghost_target.y > 0 && map.intersections[y-1][x]!=1
+             && map.intersections[y-1][x] != 0){
           prex = 0;
           prey = -1;
-        } else if (ghost_target.y<0 && map.intersections[y+1][x]!=1){
+        } else if (ghost_target.y<0 && map.intersections[y+1][x]!=1
+            && map.intersections[y+1][x] != 0){
           prex = 0;
           prey = 1;
-        } else if (map.intersections[x][y-1]!=1){
-          prex = 0;
-          prey = 0;
-        } else {
-          prex = 0;
-          prey = 0;
         }
+      } else {
+        if (ghost_target.y > 0 && map.intersections[y-1][x] != 1
+            && map.intersections[y-1][x] != 0){
+          prex = 0;
+          prey = -1;
+        } else if (ghost_target.y<0 && map.intersections[y+1][x] != 1
+            && map.intersections[y+1][x] != 0){
+          prex = 0;
+          prey = 1;
+        }
+        else if (ghost_target.x > 0 && map.intersections[y][x-1] != 1
+           && map.intersections[y][x-1] != 0){
+          prex = -1;
+          prey = 0;
+        } else if ( ghost_target.x < 0 && map.intersections[y][x+1] != 1
+           && map.intersections[y][x+1] != 0){
+          prex = 1; 
+          prey = 0;
+        } 
       }
     }
     // 
     move(prex,prey);  
+        if(prex==1){
+      text("right",100,800);
+    }
+    if(prex==-1){
+      text("left",100,800);
+    }
+    if(prex==0){
+      text(0,100,800);
+    }
+    if(prey==1){
+      text("down",100,850);
+    }
+    if(prey==-1){
+      text("up",100,850);
+    }
+    if(prey==0){
+      text(0,100,850);
+    }
   }
 /*
 
@@ -299,7 +330,10 @@ class Ghost {
   }
   
   void display(){
-    fill(255, 0, 0);
+    if(type == 0)
+      fill(255, 0, 0);
+    else if(type == 1)
+      fill(250, 150, 150);
     ellipse(x*w+(w/2), y*w+(w/2), r, r);    
   }
 }
