@@ -31,10 +31,10 @@ void draw(){
   pacman.display(); 
   blinky.display();
   pinky.display();
-  if((frameCount % 30) == 0 ){
+
     blinky.attack();
     pinky.attack();
-  }
+  
     
   
   move_randomly();
