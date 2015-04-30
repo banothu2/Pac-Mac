@@ -20,7 +20,7 @@ void setup(){
   map = new Map();
   pacman = new PacMan();
   blinky = new Ghost(0, 1, 1, 20, 25);
-  pinky = new Ghost(1, 11, 1, 20, 25);
+  pinky = new Ghost(1, 26, 1, 20, 25);
   size(700, 900);
 }
 
