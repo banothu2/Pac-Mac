@@ -31,9 +31,9 @@ void draw(){
   pacman.display(); 
   blinky.display();
   pinky.display();
-
-    blinky.attack();
-    pinky.attack();
+  blinky.attack();
+  if(frameCount%30==0){
+    pinky.attack();}
   
     
   
