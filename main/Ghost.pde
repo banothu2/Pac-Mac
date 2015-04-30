@@ -129,10 +129,10 @@ class Ghost {
         } 
       }
     }
-    // 
-    if(frameCount%12==0){
-      move(prex,prey); }
-        if(prex==1){
+    if(frameCount % 25 == 0){
+      move(prex,prey); 
+    }
+    if(prex==1){
       text("right",100,800);
     }
     if(prex==-1){
@@ -156,7 +156,7 @@ class Ghost {
     PVector pacman_location, ghost_location, ghost_target, difference;
     pacman_location = new PVector(pacman.x,pacman.y);
     ghost_location  = new PVector(x,y);
-    
+       
     switch (pacman.movement_direction){
       case 0:
         if(map.intersections[pacman.x][pacman.y - 1] == 1)
@@ -211,11 +211,6 @@ class Ghost {
         break;
     }
     
-    stroke(150, 250, 0);
-    line(pacman_location.x*w + (w/2), pacman_location.y*w + (w/2), x*w + (w/2), y*w + (w/2));
-    //line(ghost_location.x, ghost_location.y, ghost_location.x + difference.x, ghost_location.y + difference.y);
-    noStroke();    
-    
       // Intersection or box - Ghost gets a new target
      // Intersection or box - Ghost gets a new target
     if(map.intersections[y][x] == 3 || map.intersections[y][x] == 0){
@@ -261,9 +256,19 @@ class Ghost {
         } 
       }
     }
-    // 
-    move(prex,prey);  
-        if(prex==1){
+    
+    
+    stroke(0, 255, 0);
+    line(ghost_target.x*w + (w/2), ghost_target.y*w + (w/2), ghost_location.x*w + (w/2), ghost_location.y*w + (w/2));
+    //line(ghost_location.x, ghost_location.y, ghost_location.x + difference.x, ghost_location.y + difference.y);
+    noStroke();
+    
+    
+    if(frameCount % 25 == 0){
+      move(prex,prey);  
+    }
+    
+    if(prex==1){
       text("right",100,800);
     }
     if(prex==-1){
