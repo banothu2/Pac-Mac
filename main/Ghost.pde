@@ -130,7 +130,8 @@ class Ghost {
       }
     }
     // 
-    move(prex,prey);  
+    if(frameCount%12==0){
+      move(prex,prey); }
         if(prex==1){
       text("right",100,800);
     }
