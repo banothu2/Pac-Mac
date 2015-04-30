@@ -33,7 +33,8 @@ void draw(){
   pinky.display();
   blinky.attack();
   if(frameCount%30==0){
-    pinky.attack();}
+    pinky.attack();
+  }
   
     
   
