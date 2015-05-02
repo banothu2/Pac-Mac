@@ -4,8 +4,9 @@ class Ghost {
   int r; 
   int w;
   int type;                 // Red = 0, Pink = 1, Blue = 2, Green = 3
-  int prex, prey; //used so ghost follows a command till it reaches intersection
+  int prex, prey, prexi, preyi, oprex, oprey, checker; //used so ghost follows a command till it reaches intersection
   int padding; 
+  PVector pacman_location, blinky_location, ghost_location, ghost_target, difference1, difference2, difference;
   Ghost(int _type, int _x, int _y, int _r, int _w){
     x = _x;
     y = _y;
