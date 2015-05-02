@@ -12,16 +12,27 @@
 */
 
 Map map;
-Ghost blinky, pinky; 
 PacMan pacman;
+int NGHOSTS = 2;
+ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
 
 boolean random_move = false;
 void setup(){
   map = new Map();
-  pacman = new PacMan();
-  blinky = new Ghost(0, 1, 1, 20, 25);
-  pinky = new Ghost(1, 26, 1, 20, 25);
+  pacman = new PacMan(9, 8);
+  setup_bots();
+
+
   size(700, 900);
+}
+
+void setup_bots(){
+  int[] ghost_xs = {1, 6};
+  int[] ghost_ys = {1, 1};
+  for(int i = 0; i < NGHOSTS; i++){
+    Ghost g = new Ghost(0, ghost_xs[i], ghost_ys[i], 20, 25);
+    ghosts.add(g);
+  }
 }
 
 void draw(){
@@ -29,16 +40,13 @@ void draw(){
   stroke(0);
   map.display();
   pacman.display(); 
-  blinky.display();
-  pinky.display();
-  blinky.attack();
-  //pinky.attack();
-  
-    
-  
+  pacman.find_path();
+  for(Ghost g: ghosts){  
+    g.display();
+    g.attack();
+  }  
   move_randomly();
   
-  //fill(255);
   text("Score: " + pacman.score, 0, 800);
 }
 
@@ -49,11 +57,6 @@ void move_randomly(){
     if(x_dir == 0 || y_dir == 0){
       pacman.update(x_dir, y_dir); 
     } 
-//    x_dir = int(random(-2, 2));
-//    y_dir = int(random(-2, 2));
-//    if(x_dir == 0 || y_dir == 0){
-//      blinky.update(x_dir, y_dir); 
-//    } 
   }
 }
 

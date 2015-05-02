@@ -8,9 +8,9 @@ class PacMan {
   boolean moving_one_block = false;
   int transition_x = 0;
   int transition_y = 0;
-  PacMan() {
-    x = 13;
-    y = 23;
+  PacMan(int _x, int _y) {
+    x = _x;
+    y = _y; // 23
     r = 20;
     w = 25;
     score = -1;
@@ -24,6 +24,10 @@ class PacMan {
   void update(int _x, int _y) {
     consume();
     move(_x, _y);
+  }
+
+  void find_path(){
+    
   }
 
   void move(int _x, int _y) {
@@ -57,8 +61,6 @@ class PacMan {
       }
     } 
   }
-
-
 
   void consume() {
     if (map.level_one[y][x] == 2) {
@@ -103,13 +105,12 @@ class PacMan {
 //      transition_y = 0;
 //      movement_direction = -1;
 //    }
-
     ellipse(x*w+(w/2) + transition_x, y*w+(w/2) + transition_y, r, r);
   }
   
-    void reset(){
-  x=13;
-  y=23;
+  void reset(){
+    x=13;
+    y=23;
   }
   
 }  
