@@ -74,9 +74,9 @@ class Ghost {
     }
     move(prex,prey);  
   }*/
-
+  
   void blinky(){
-    PVector pacman_location, ghost_location, ghost_target, difference;
+
     pacman_location = new PVector(pacman.x,pacman.y);
     ghost_location  = new PVector(x,y);
     ghost_target    = new PVector(0,0);
@@ -91,47 +91,79 @@ class Ghost {
     line(pacman_location.x*w + (w/2), pacman_location.y*w + (w/2), ghost_location.x*w + (w/2), ghost_location.y*w + (w/2));
     //line(ghost_location.x, ghost_location.y, ghost_location.x + difference.x, ghost_location.y + difference.y);
     noStroke();
+    
+    oprex=prex;
+    oprey=prey;
 
     // Intersection or box - Ghost gets a new target
     if(map.intersections[y][x] == 3 || map.intersections[y][x] == 0){
       ghost_target = difference;
       ghost_target.normalize();
+
       // If x component is larger than y, it should move horizontally. 
       if (abs(ghost_target.x) > abs(ghost_target.y)){
-        if (ghost_target.x > 0 && map.intersections[y][x-1] != 1 ){
+        if (ghost_target.x >= 0 && check_left() && oprex!=1){
           prex = -1;
           prey = 0;
-        } else if ( ghost_target.x < 0 && map.intersections[y][x+1] != 1 ){
+          checker=1;
+        } else if ( ghost_target.x <= 0 && check_right() && oprex!=-1){
           prex = 1; 
           prey = 0;
+          checker=2;
         } 
-        else if (ghost_target.y > 0 && map.intersections[y-1][x]!=1){
+        else if (ghost_target.y >= 0 && check_up()  && oprey!=1){
           prex = 0;
           prey = -1;
-        } else if (ghost_target.y<0 && map.intersections[y+1][x]!=1){
+          checker=3;
+        } else if (ghost_target.y<=0 && check_down() && oprey!=-1){
           prex = 0;
           prey = 1;
+          checker=4;
         }
+         else if(check_up() && oprey!=1){
+         prex = 0;
+         prey = -1;
+         checker=5;
+         }
+         else if(check_down() && oprey!= -1){
+         prex = 0;
+         prey = 1;
+         checker=6;
+         }
       } else {
-        if (ghost_target.y > 0 && map.intersections[y-1][x]!=1){
+        if (ghost_target.y >= 0 && check_up() && oprey!=1){
           prex = 0;
           prey = -1;
-        } else if (ghost_target.y<0 && map.intersections[y+1][x]!=1){
+          checker=7;
+        } else if (ghost_target.y<=0 && check_down() && oprey!=-1){
           prex = 0;
           prey = 1;
+          checker=8;
         }
-        else if (ghost_target.x > 0 && map.intersections[y][x-1] != 1 ){
+        else if (ghost_target.x >= 0 && check_left() && oprex!=1){
           prex = -1;
           prey = 0;
-        } else if ( ghost_target.x < 0 && map.intersections[y][x+1] != 1 ){
+          checker=9;
+        } else if ( ghost_target.x <= 0 && check_right() && oprex!=-1 ){
           prex = 1; 
           prey = 0;
+          checker=10;
         } 
+        else if(check_left() && oprex!=1){
+          prex = -1;
+          prey = 0;
+          checker=11;
+        }
+        else if(check_right() && oprex != -1){
+          prex = 1; 
+          prey = 0;
+          checker=12;
+        }
       }
     }
-    if(frameCount % 25 == 0){
-      move(prex,prey); 
-    }
+    // 
+    if(frameCount%25==0){
+      move(prex,prey);}
     if(prex==1){
       text("right",100,800);
     }
@@ -150,6 +182,13 @@ class Ghost {
     if(prey==0){
       text(0,100,850);
     }
+    
+    text(ghost_target.x,200,800);
+    text(ghost_target.y,200,850);
+    text(oprex,250,800);
+    text(oprey,250,850);
+    text(checker, 350, 800);
+
   }
       
   void pinky(){
@@ -341,6 +380,25 @@ class Ghost {
     else if(type == 1)
       fill(250, 150, 150);
     ellipse(x*w+(w/2), y*w+(w/2), r, r);    
+  }
+    boolean check_right(){
+    if(map.intersections[y][x+1] != 1) return true;
+    else return false;
+  }
+  
+  boolean check_left(){
+    if(map.intersections[y][x-1] != 1) return true;
+    else return false;
+  }
+  
+  boolean check_up(){
+    if(map.intersections[y-1][x]!=1) return true;
+    else return false;
+  }
+  
+  boolean check_down(){
+    if(map.intersections[y+1][x]!=1) return true;
+    else return false;
   }
 }
 
