@@ -24,6 +24,9 @@ void setup(){
 
 
   size(700, 900);
+  for(Ghost g: ghosts){  
+    g.attack();
+  }  
 }
 
 void setup_bots(){
@@ -40,14 +43,19 @@ void draw(){
   stroke(0);
   map.display();
   pacman.display(); 
-  pacman.find_path();
   for(Ghost g: ghosts){  
     g.display();
+  }  
+  pacman.find_path();
+  
+  text("Score: " + pacman.score, 0, 800);
+}
+
+void step_game(){
+  for(Ghost g: ghosts){  
     g.attack();
   }  
   move_randomly();
-  
-  text("Score: " + pacman.score, 0, 800);
 }
 
 void move_randomly(){
@@ -73,8 +81,10 @@ void keyPressed() {
       pacman.update(1, 0);
     } 
   } else if (key == 'p') {
-      paused = !paused;
+    paused = !paused;
   } else if (key == 'r') {
     random_move = !random_move;
+  } else if (key == 's') {
+    step_game();
   }
 }
