@@ -13,24 +13,31 @@
 
 Map map;
 PacMan pacman;
+QLearning QAgent;
 int NGHOSTS = 2;
 ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
+int ntrials;
+float last_trial_reward;
+int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
+int w = 50;
 
 boolean random_move = false;
 void setup(){
-  map = new Map();
-  pacman = new PacMan(9, 8);
+  ntrials = 0;
+  map = new Map(w);
+  pacman = new PacMan(9, 8, w);
+  QAgent = new QLearning();
   setup_bots();
 
 
-  size(700, 900);
+  size(900, 900);
 }
 
 void setup_bots(){
   int[] ghost_xs = {1, 6};
   int[] ghost_ys = {1, 1};
   for(int i = 0; i < NGHOSTS; i++){
-    Ghost g = new Ghost(0, ghost_xs[i], ghost_ys[i], 20, 25);
+    Ghost g = new Ghost(0, ghost_xs[i], ghost_ys[i], 20, w);
     ghosts.add(g);
   }
 }
@@ -39,6 +46,7 @@ void draw(){
   background(0);
   stroke(0);
   map.display();
+  QAgent.step();
   pacman.display(); 
   pacman.find_path();
   for(Ghost g: ghosts){  
@@ -47,7 +55,29 @@ void draw(){
   }  
   move_randomly();
   
-  text("Score: " + pacman.score, 0, 800);
+  text("Score: " + pacman.score, 25, 800);
+}
+
+void nextTrial() {
+  ntrials++;
+  last_trial_reward = QAgent.summed_reward;
+  QAgent.home();
+  for(Ghost g: ghosts){  
+    g.reset();
+  } 
+  int[][] level_zero_copy = { 
+           {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
+           {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+           {1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1},
+           {1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1},
+           {1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1},
+           {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+           {1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1},
+           {1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1},
+           {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
+           {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
+             }; 
+  map.level_one = level_zero_copy;
 }
 
 void move_randomly(){

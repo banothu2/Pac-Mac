@@ -1,4 +1,5 @@
 class Ghost {
+  int startx, starty;
   int x;
   int y; 
   int r; 
@@ -10,6 +11,8 @@ class Ghost {
   Ghost(int _type, int _x, int _y, int _r, int _w){
     x = _x;
     y = _y;
+    startx = _x;
+    starty = _y;
     r = _r;
     w = _w;
     type = _type;
@@ -32,6 +35,11 @@ class Ghost {
       case 3: 
         break;
     } 
+  }
+  
+  void reset(){
+    x = startx;
+    y = starty;
   }
   
   /*void blinky(){
@@ -165,7 +173,7 @@ class Ghost {
       }
     }
     // 
-    if(frameCount%25==0){
+    if(frameCount%15==0){
       move(prex,prey);}
     if(prex==1){
       text("right",100,800);

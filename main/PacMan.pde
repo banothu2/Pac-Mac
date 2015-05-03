@@ -8,12 +8,14 @@ class PacMan {
   boolean moving_one_block = false;
   int transition_x = 0;
   int transition_y = 0;
-  PacMan(int _x, int _y) {
+  boolean alive;
+  PacMan(int _x, int _y, int _w) {
     x = _x;
     y = _y; // 23
     r = 20;
-    w = 25;
+    w = _w;
     score = -1;
+    alive = true;
     consume();
   }
 
@@ -109,8 +111,9 @@ class PacMan {
   }
   
   void reset(){
-    x=13;
-    y=23;
+    x=9;
+    y=8;
+    alive = false;
   }
   
 }  
