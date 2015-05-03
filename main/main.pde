@@ -19,7 +19,7 @@ ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
 int ntrials;
 float last_trial_reward;
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
-int w = 50;
+int w = 25;
 
 boolean random_move = false;
 void setup(){
@@ -29,8 +29,10 @@ void setup(){
   QAgent = new QLearning();
   setup_bots();
 
-
   size(900, 900);
+  for(Ghost g: ghosts){  
+    g.attack();
+  }  
 }
 
 void setup_bots(){
@@ -48,12 +50,11 @@ void draw(){
   map.display();
   QAgent.step();
   pacman.display(); 
-  pacman.find_path();
   for(Ghost g: ghosts){  
     g.display();
-    g.attack();
   }  
-  move_randomly();
+  step_game();
+  pacman.find_path();
   
   text("Score: " + pacman.score, 25, 800);
 }
@@ -80,6 +81,13 @@ void nextTrial() {
   map.level_one = level_zero_copy;
 }
 
+void step_game(){
+  for(Ghost g: ghosts){  
+    g.attack();
+  }  
+  move_randomly();
+}
+
 void move_randomly(){
   if(random_move){
     int x_dir = int(random(-2, 2));
@@ -103,8 +111,10 @@ void keyPressed() {
       pacman.update(1, 0);
     } 
   } else if (key == 'p') {
-      paused = !paused;
+    paused = !paused;
   } else if (key == 'r') {
     random_move = !random_move;
+  } else if (key == 's') {
+    step_game();
   }
 }

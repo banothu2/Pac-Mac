@@ -7,6 +7,10 @@ class Ghost {
   int type;                 // Red = 0, Pink = 1, Blue = 2, Green = 3
   int prex, prey, prexi, preyi, oprex, oprey, checker; //used so ghost follows a command till it reaches intersection
   int padding; 
+  
+  int facing_x; 
+  int facing_y;
+  
   PVector pacman_location, blinky_location, ghost_location, ghost_target, difference1, difference2, difference;
   Ghost(int _type, int _x, int _y, int _r, int _w){
     x = _x;
@@ -85,7 +89,7 @@ class Ghost {
   }*/
   
   void blinky(){
-
+    
     pacman_location = new PVector(pacman.x,pacman.y);
     ghost_location  = new PVector(x,y);
     ghost_target    = new PVector(0,0);
@@ -175,6 +179,9 @@ class Ghost {
     // 
     if(frameCount%15==0){
       move(prex,prey);}
+      facing_x = 2*prex + int(ghost_location.x);
+      facing_y = 2*prey + int(ghost_location.y);
+    //}
     if(prex==1){
       text("right",100,800);
     }
@@ -391,8 +398,12 @@ class Ghost {
     else if(type == 1)
       fill(250, 150, 150);
     ellipse(x*w+(w/2), y*w+(w/2), r, r);    
+    
+    fill(255, 255, 255);
+    ellipse(facing_x*w+(w/2), facing_y*w+(w/2), r/2, r/2);
   }
-    boolean check_right(){
+  
+  boolean check_right(){
     if(map.intersections[y][x+1] != 1) return true;
     else return false;
   }
