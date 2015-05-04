@@ -50,6 +50,7 @@ class PacMan {
       i++;
     } 
     
+    //pick_direction(PacMap, x, y);
 
     //BFS_p_n_g(PacMap, x, y, ghosts);
     //BFS_pacman(PacMap, x, y);
@@ -57,6 +58,10 @@ class PacMan {
 
     // Find where pac man is in the map and mark it
     display_pacmap();
+  }
+  
+  void pick_direction(int [][] grid, int _x, int _y, Ghost g){
+    
   }
   
   void BFS_p_n_g(int [][] grid, int _x, int _y, Ghost g){
