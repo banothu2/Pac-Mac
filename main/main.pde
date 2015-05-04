@@ -53,8 +53,14 @@ void draw(){
   for(Ghost g: ghosts){  
     g.display();
   }  
-  step_game();
-  pacman.find_path();
+  
+
+  int i=0;
+  for(Ghost g: ghosts){
+    if(i ==0){
+    pacman.solve(g);}
+    i++;
+  }
   
   text("Score: " + pacman.score, 25, 800);
 }
