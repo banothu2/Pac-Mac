@@ -1,4 +1,5 @@
 class Ghost {
+  int startx, starty;
   int x;
   int y; 
   int r; 
@@ -14,6 +15,8 @@ class Ghost {
   Ghost(int _type, int _x, int _y, int _r, int _w){
     x = _x;
     y = _y;
+    startx = _x;
+    starty = _y;
     r = _r;
     w = _w;
     type = _type;
@@ -36,6 +39,11 @@ class Ghost {
       case 3: 
         break;
     } 
+  }
+  
+  void reset(){
+    x = startx;
+    y = starty;
   }
   
   /*void blinky(){
@@ -169,8 +177,8 @@ class Ghost {
       }
     }
     // 
-    //if(frameCount%25==0){
-      move(prex,prey);
+    if(frameCount%15==0){
+      move(prex,prey);}
       facing_x = 2*prex + int(ghost_location.x);
       facing_y = 2*prey + int(ghost_location.y);
     //}

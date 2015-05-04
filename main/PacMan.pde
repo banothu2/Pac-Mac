@@ -8,15 +8,17 @@ class PacMan {
   boolean moving_one_block = false;
   int transition_x = 0;
   int transition_y = 0;
+  boolean alive;
   int[][] PacMap;
   int reset_x; 
   int reset_y;
-  PacMan(int _x, int _y) {
+  PacMan(int _x, int _y, int _w) {
     x = _x;
     y = _y; // 23
     r = 20;
-    w = 25;
+    w = _w;
     score = -1;
+    alive = true;
     consume();
     reset_x = _x;
     reset_y = _y;
@@ -459,6 +461,8 @@ class PacMan {
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
              };
     map.level_one = level_zero_reset;
+    
+    alive = false;
   }
 }  
 

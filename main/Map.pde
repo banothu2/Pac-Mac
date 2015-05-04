@@ -2,7 +2,6 @@ class Map {
 
   int nx, ny;                 // Number of cells in each direction
   float w;                      // Cell size (pixels)
-  float[][] xc, yx;           // Cell coordinates
   int[][] level_zero = { 
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -39,8 +38,20 @@ class Map {
            {1, 3, 2, 2, 2, 2, 3, 2, 2, 3, 2, 2, 3, 1},
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
              }; 
+  int[][] level_zero_reward = { 
+           {-10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10}, 
+           {-10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, -10},
+           {-10, 10, -10, -10, -10, -10, 10, -10, -10, -10, -10, -10, 10, -10},
+           {-10, 10, -10, -10, -10, -10, 10, -10, -10, -10, -10, -10, 10, -10},
+           {-10, 10, -10, -10, -10, -10, 10, -10, -10, -10, -10, -10, 10, -10},
+           {-10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, -10},
+           {-10, 10, -10, -10, -10, -10, 10, -10, -10, 10, -10, -10, 10, -10},
+           {-10, 10, -10, -10, -10, -10, 10, -10, -10, 10, -10, -10, 10, -10},
+           {-10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, -10},
+           {-10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10, -10}
+             };      
   /*
-  int[][] level_one = { 
+  int[][] level_one = {
          {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
          {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
          {1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 2, 1},
@@ -110,19 +121,60 @@ class Map {
   */
   int [][] level_one;
   int [][] intersections;
+  float[][] xc, yc; // cell coordinates (center)
   // Initialize the Maze 
-  Map(){    
+  Map(int _w){    
     level_one = level_zero;
     intersections = level_zero_intersections;
     nx = level_zero.length;    // Number of rows
     ny = level_zero[0].length;    // Number of columns
-    w = 25;     // Size of blocks
+    w = _w;     // Size of blocks    
+    xc = new float[ny][nx];
+    yc = new float[ny][nx];
+    for (int j=0; j<nx; j++) {
+      for (int i=0; i<ny; i++) {
+        xc[i][j] = w*i + w/2;
+        yc[i][j] = w*j + w/2;
+      }
+    }
   }
   
   void display(){
     // Render the level
     for(int i = 0; i < ny; i++){
       for(int j = 0; j < nx; j++){
+        //print(i, j);
+        if(true) {
+          int s = i + ny*j; // state
+            fill(0,255,255);
+            textAlign(CENTER, CENTER);
+            textSize(9);
+            // EAST
+            pushMatrix();
+            translate(xc[i][j]+20, yc[i][j]);
+            rotate(HALF_PI);
+            text(nf(QAgent.Q[s][EAST],0,1), 0, 0);
+            popMatrix();
+            // SOUTH
+            pushMatrix();
+            translate(xc[i][j], yc[i][j]+20);
+            rotate(0);
+            text(nf(QAgent.Q[s][SOUTH],0,1), 0, 0);
+            popMatrix();
+            //WEST
+            pushMatrix();
+            translate(xc[i][j]-20, yc[i][j]);
+            rotate(-HALF_PI);
+            text(nf(QAgent.Q[s][WEST],0,1), 0, 0);
+            popMatrix();
+            // NORTH
+            pushMatrix();
+            translate(xc[i][j], yc[i][j]-20);
+            rotate(0);
+            text(nf(QAgent.Q[s][NORTH],0,1), 0, 0);
+            popMatrix();   
+          }
+                 
         switch(level_one[j][i]){
           case 1:
             fill(100, 150, 250);
@@ -140,7 +192,7 @@ class Map {
         
       }
     }
-     
   }
+  
 }
  
