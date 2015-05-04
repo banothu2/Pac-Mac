@@ -39,12 +39,9 @@ class QLearning{
   void step(){
     int s0, s1, a0, a1;
     if(pacman.alive != true){
-      //nextTrial();
+      nextTrial();
       pacman.alive = true;
     }
-    
-  text("ix: " + QAgent.ix, 0, 830);
-  text("iy: " + QAgent.iy, 0, 860);
     
     if(frameCount%5==0){
       s0 = state;
@@ -112,13 +109,6 @@ class QLearning{
     }
     state = ix + map.ny*iy;
     pacman.update(xmove, ymove);
-  } 
-  
-  
-  
-  
-  
-  
-  
+  }   
 }
 

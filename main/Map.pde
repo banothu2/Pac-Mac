@@ -144,7 +144,7 @@ class Map {
     for(int i = 0; i < ny; i++){
       for(int j = 0; j < nx; j++){
         //print(i, j);
-        if(true) {
+        if(showQ) {
           int s = i + ny*j; // state
             fill(0,255,255);
             textAlign(CENTER, CENTER);
@@ -153,27 +153,33 @@ class Map {
             pushMatrix();
             translate(xc[i][j]+20, yc[i][j]);
             rotate(HALF_PI);
-            //text(nf(QAgent.Q[s][EAST],0,1), 0, 0);
+            text(nf(QAgent.Q[s][EAST],0,1), 0, 0);
             popMatrix();
             // SOUTH
             pushMatrix();
             translate(xc[i][j], yc[i][j]+20);
             rotate(0);
-            //text(nf(QAgent.Q[s][SOUTH],0,1), 0, 0);
+            text(nf(QAgent.Q[s][SOUTH],0,1), 0, 0);
             popMatrix();
             //WEST
             pushMatrix();
             translate(xc[i][j]-20, yc[i][j]);
             rotate(-HALF_PI);
-            //text(nf(QAgent.Q[s][WEST],0,1), 0, 0);
+            text(nf(QAgent.Q[s][WEST],0,1), 0, 0);
             popMatrix();
             // NORTH
             pushMatrix();
             translate(xc[i][j], yc[i][j]-20);
             rotate(0);
-            //text(nf(QAgent.Q[s][NORTH],0,1), 0, 0);
-            popMatrix();   
+            text(nf(QAgent.Q[s][NORTH],0,1), 0, 0);
+            popMatrix();
+            textAlign(LEFT,CENTER);
+            textSize(12);
           }
+        else {
+          textAlign(LEFT,CENTER);
+          textSize(12);
+        }
                  
         switch(level_one[j][i]){
           case 1:
