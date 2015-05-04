@@ -76,6 +76,7 @@ class PacMan {
       memo[y][x] = 0;
       //print("Best direction val, and direction: ", best_dir.val, best_dir.direction, "\n");
       
+      /*
       print("Best value: ", best_dir.val);
       switch(best_dir.direction){
         case 0: 
@@ -91,7 +92,7 @@ class PacMan {
           print(" DOWN \n");
           break;  
       }
-      
+      */
       int x_val = 0;
       int y_val = 0;
       switch(best_dir.direction){
@@ -224,7 +225,7 @@ class PacMan {
     // Label v as discovered 
     //grid[y][x] = ;
     int levels = 0;
-    while(!pac_q.empty() && !ghost_one_q.empty() && levels < 4*4 && !death){
+    while(!pac_q.empty() && !ghost_one_q.empty() && levels < 4*6 && !death){
       levels = levels + 1;
 
       Coords v = pac_q.pop();
@@ -316,7 +317,7 @@ class PacMan {
       }
       
       
-      if(levels < 4*2){
+      if(levels < 4*4){
         // Top 
         switch(grid[gv.y][gv.x+1]){
           case 0: 
@@ -426,7 +427,7 @@ class PacMan {
       Coords gv = ghost_one_q.pop();
       Coords n = new Coords(0, 0);      
       
-      if(levels < 4*2){
+      if(levels < 4*4){
         // Top 
         switch(grid[gv.y][gv.x+1]){
           case 0: 
@@ -724,9 +725,9 @@ class PacMan {
   }
 
   void reset() {
-    for (Ghost g : ghosts) {
-      print("Pacman's location: ", x, y, " Ghost's location: ", g.x, g.y);
-    }
+    //for (Ghost g : ghosts) {
+      //print("Pacman's location: ", x, y, " Ghost's location: ", g.x, g.y);
+    //}
     x = reset_x;
     y = reset_y;
     int[][] level_zero_reset = {

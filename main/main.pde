@@ -35,12 +35,21 @@ void setup(){
 }
 
 void setup_bots(){
-  int[] ghost_xs = {1, 6};
-  int[] ghost_ys = {1, 1};
+  int[] ghost_xs = {1, 6, 12};
+  int[] ghost_ys = {1, 1, 1};
   for(int i = 0; i < NGHOSTS; i++){
     Ghost g = new Ghost(i, ghost_xs[i], ghost_ys[i], 20, 25);
     ghosts.add(g);
   }
+  
+  /*
+  Ghost g = new Ghost(0, ghost_xs[0], ghost_ys[0], 20, 25);
+  ghosts.add(g);
+  Ghost g1 = new Ghost(1, ghost_xs[1], ghost_ys[1], 20, 25);
+  ghosts.add(g1);
+  Ghost g2 = new Ghost(1, ghost_xs[2], ghost_ys[2], 20, 25);
+  ghosts.add(g2);
+  */
 }
 
 void draw(){
@@ -53,6 +62,7 @@ void draw(){
   }  
   //if(frameCount%25==0){
     step_game();
+    
     pacman.find_path();
   //}
   text("Score: " + pacman.score, 0, 800);
@@ -67,7 +77,7 @@ void step_game(){
   for(Ghost g: ghosts){  
     g.attack();
   }  
-  move_randomly();
+  //move_randomly();
 }
 
 void move_randomly(){
