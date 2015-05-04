@@ -21,6 +21,8 @@ float last_trial_reward;
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
 int w = 25;
 
+boolean human_model = false;
+
 boolean random_move = false;
 void setup(){
   map = new Map(25);
@@ -61,9 +63,11 @@ void draw(){
     g.display();
   }  
   //if(frameCount%25==0){
+  if(human_model){
     step_game();
     
     pacman.find_path();
+  }
   //}
   text("Score: " + pacman.score, 0, 800);
 }
@@ -108,5 +112,8 @@ void keyPressed() {
     random_move = !random_move;
   } else if (key == 's') {
     step_game();
-  } 
+  } else if (key == 'h'){
+    human_model = !human_model;
+  }
+  
 }

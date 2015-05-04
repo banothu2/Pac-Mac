@@ -617,8 +617,8 @@ class PacMan {
     // Render the level
     int map_rows = map.level_zero.length;    // Number of rows
     int map_columns = map.level_zero[0].length; 
-    int offset_x = map_rows*w;
-    int offset_y = map_columns*w;
+    int offset_x = (map_rows+5)*(w);
+    int offset_y = 0; //map_columns*w;
 
     for (int i = 0; i < map.ny; i++) {
       for (int j = 0; j < map.nx; j++) {
@@ -627,7 +627,6 @@ class PacMan {
         switch(PacMap[j][i]) {
         case 1: 
           fill(100, 150, 250);
-          ;
           rect(offset_x + i*w, offset_y + j*w, w, w); 
           break;
         case 2: 
