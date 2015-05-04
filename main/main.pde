@@ -23,13 +23,13 @@ int w = 25;
 
 boolean human_model = false;
 
+boolean vector_model = false;
+
 boolean random_move = false;
 void setup(){
   map = new Map(25);
   pacman = new PacMan(9, 8, w);
   setup_bots();
-
-
   size(700, 900);
   for(Ghost g: ghosts){  
     g.attack();
@@ -67,7 +67,7 @@ void draw(){
 
   int i=0;
   for(Ghost g: ghosts){
-    if(i ==0){
+    if(i==0&&vector_model){
     pacman.solve(g);}
     i++;
   }
@@ -122,5 +122,8 @@ void keyPressed() {
     random_move = !random_move;
   } else if (key == 's') {
     step_game();
-  } 
+  } else if(key== 'v'){
+     vector_model=true;
+     human_model=false;
+  }
 }
