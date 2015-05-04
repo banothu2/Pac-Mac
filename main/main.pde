@@ -46,6 +46,7 @@ void setup(){
   map = new Map(w);
   pacman = new PacMan(pacman_start_x, pacman_start_y, w);
   setup_bots();
+  size(700, 900);
   QAgent = new QLearning();
   size(game_width, game_height);
   for(Ghost g: ghosts){  
@@ -88,7 +89,17 @@ void draw(){
     default: 
       game_mode = -1;
       break;
+      
+  /*
+  int i=0;
+  for(Ghost g: ghosts){
+    if(i==0&&vector_model){
+    pacman.solve(g);}
+    i++;
   }
+  */
+  text("Score: " + pacman.score, 25, 800);
+
   display_info();
 }
 
@@ -143,6 +154,14 @@ void keyPressed() {
     paused = !paused;
   } else if (key == 'r') {
     random_move = !random_move;
+<<<<<<< HEAD
+=======
+  } else if (key == 's') {
+    step_game();
+  } else if(key== 'v'){
+     vector_model=true;
+     human_model=false;
+>>>>>>> origin/master
   } else if (key == 'l') {
     pacman.x = QAgent.ix;
     pacman.y = QAgent.iy;
