@@ -8,17 +8,31 @@ class PacMan {
   boolean moving_one_block = false;
   int transition_x = 0;
   int transition_y = 0;
-  boolean alive;
   int[][] PacMap;
   int reset_x; 
   int reset_y;
-  PacMan(int _x, int _y, int _w) {
+  int max_depth_for_search = 6;
+  int[][] memo = {
+           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
+           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+           {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+             };
+  int ghost_penalty = -30;
+  int pellet_reward = 3;
+  int empty_square_reward = 4;
+  PacMan(int _x, int _y) {
     x = _x;
     y = _y; // 23
     r = 20;
-    w = _w;
+    w = 25;
     score = -1;
-    alive = true;
     consume();
     reset_x = _x;
     reset_y = _y;
@@ -51,9 +65,48 @@ class PacMan {
       }
       i++;
     } 
-    
-    //pick_direction(PacMap, x, y);
+    if(frameCount%25==0){
+      memo[y][x] = 1;
+      ValueAndDirection best_dir = new ValueAndDirection(0, 0);
+      best_dir = pick_direction(x, y, 0, 0);
+      memo[y][x] = 0;
+      //print("Best direction val, and direction: ", best_dir.val, best_dir.direction, "\n");
+      
+      print("Best value: ", best_dir.val);
+      switch(best_dir.direction){
+        case 0: 
+          print(" LEFT \n");
+          break;
+        case 1:
+          print(" RIGHT \n");
+          break;
+        case 2:
+          print(" UP \n");
+          break; 
+        case 3: 
+          print(" DOWN \n");
+          break;  
+      }
+      
+      int x_val = 0;
+      int y_val = 0;
+      switch(best_dir.direction){
+        case 0: 
+          update(-1, 0);
+          break;
+        case 1:
+          update( 1, 0);
+          break;
+        case 2:
+          update(0, -1);
+          break; 
+        case 3: 
+          update(0,  1);
+          break;  
+      }
+    }
 
+    //paused = !paused;
     //BFS_p_n_g(PacMap, x, y, ghosts);
     //BFS_pacman(PacMap, x, y);
     // Find where the Ghosts are in the map and mark it 
@@ -62,8 +115,94 @@ class PacMan {
     display_pacmap();
   }
   
-  void pick_direction(int [][] grid, int _x, int _y, Ghost g){
-    
+  ValueAndDirection pick_direction(int _x, int _y, int _prev, int _depth){
+     // Need to try all 4 directions 
+     // Need to return best value and direction pair.    
+
+     float[] cardinals = {0, 0, 0, 0};
+     // LEFT - grid[v.y][v.x-1]
+     if( (PacMap[_y][_x-1] == pellet_reward || PacMap[_y][_x-1] == ghost_penalty || PacMap[_y][_x-1] == empty_square_reward) && memo[_y][_x-1] == 0 ){
+         memo[_y][_x-1] = 1;
+         _depth = _depth + 1;
+         ValueAndDirection recurse = new ValueAndDirection(0, 0);
+         recurse = pick_direction(_x-1, _y, PacMap[_y][_x-1], _depth);
+         if(PacMap[_y][_x-1] == empty_square_reward){
+           cardinals[0] = 1 + recurse.val;
+         } else {
+           cardinals[0] = PacMap[_y][_x-1] + (recurse.val)*(1.0/_depth);
+         }
+         //PacMap[_y][_x-1] = -10;
+         //print(PacMap[_y][_x-1], _depth, _y, _x-1, cardinals[0], "\n");
+          memo[_y][_x-1] = 0;
+     }
+     
+     // RIGHT - grid[v.y][v.x+1]
+     if( (PacMap[_y][_x+1] == pellet_reward || PacMap[_y][_x+1] == ghost_penalty || PacMap[_y][_x+1] == empty_square_reward) && memo[_y][_x+1] == 0 ){
+         memo[_y][_x+1] = 1; // Mark as traveled.
+         _depth = _depth + 1;
+         ValueAndDirection recurse = new ValueAndDirection(0, 0);
+         recurse = pick_direction(_x+1, _y, PacMap[_y][_x+1], _depth);
+        if(PacMap[_y][_x+1] == empty_square_reward){
+           cardinals[1] = 1 + recurse.val;
+         } else {
+           cardinals[1] = PacMap[_y][_x+1] + (recurse.val)*(1.0/_depth);
+         }
+         //PacMap[_y][_x+1] = -10;
+         memo[_y][_x+1] = 0;
+     }
+     // TOP - grid[v.y-1][v.x]
+    if( (PacMap[_y-1][_x] == pellet_reward || PacMap[_y-1][_x] == ghost_penalty || PacMap[_y-1][_x] == 4) && memo[_y-1][_x] == 0 ){
+         memo[_y-1][_x] = 1; // Mark as traveled.
+         _depth = _depth + 1;
+         ValueAndDirection recurse = new ValueAndDirection(0, 0);
+         recurse = pick_direction(_x, _y-1, PacMap[_y-1][_x], _depth);
+         if(PacMap[_y-1][_x] == empty_square_reward){
+           cardinals[2] = 1 + recurse.val;
+         } else {
+           cardinals[2] = PacMap[_y-1][_x] + (recurse.val)*(1.0/_depth);
+         }
+         //PacMap[_y-1][_x] = -10;
+         memo[_y-1][_x] = 0;
+     }
+     // BOTTOM - grid[v.y+1][v.x]
+    if( (PacMap[_y+1][_x] == pellet_reward || PacMap[_y+1][_x] == ghost_penalty || PacMap[_y+1][_x] == empty_square_reward) && memo[_y+1][_x] == 0 ){
+         memo[_y+1][_x] = 1; // Mark as traveled.
+         _depth = _depth + 1;
+         ValueAndDirection recurse = new ValueAndDirection(0, 0);
+         recurse = pick_direction(_x, _y+1, PacMap[_y+1][_x], _depth);
+         if(PacMap[_y+1][_x] == empty_square_reward){
+           cardinals[3] = 1 + recurse.val;
+         } else {
+           cardinals[3] = PacMap[_y+1][_x] + (recurse.val)*(1.0/_depth);
+         }
+         //PacMap[_y-1][_x] = -10;
+         memo[_y+1][_x] = 0;
+     }
+     
+     
+     //print(cardinals[0], cardinals[1], _depth, "\n");
+     
+     float max = cardinals[0]; 
+     int dir = 0;
+     for(int i = 1; i < 4; i++){
+       if(cardinals[i] > max){
+         max = cardinals[i];
+         dir = i;  
+       }
+     }
+     ValueAndDirection ret = new ValueAndDirection(max, dir);
+ 
+     return ret;
+     // RIGHT - grid[v.y][v.x+1]
+     
+     // TOP - grid[v.y-1][v.x]
+     
+     // BOTTOM - grid[v.y+1][v.x]
+     
+     
+     // Map for values - PacMap 
+     // ValueAndDirection ret = new ValueAndDirection(0, 0);
+     // 0 - LEFT, 1 - RIGHT, 2 - UP, 3 - Down  
   }
   
   void BFS_p_n_g(int [][] grid, int _x, int _y, Ghost g){
@@ -94,7 +233,7 @@ class PacMan {
           n.y = v.y;
           n.x = v.x+1;
           pac_q.push(n);
-          grid[v.y][v.x+1] = 0;
+          grid[v.y][v.x+1] = empty_square_reward;
           break;
         case 1: 
           break;
@@ -102,7 +241,7 @@ class PacMan {
           n.y = v.y;
           n.x = v.x+1;
           pac_q.push(n);
-          grid[v.y][v.x+1] = 3;
+          grid[v.y][v.x+1] = pellet_reward;
           break;
         case -10:
           death = true;
@@ -115,7 +254,7 @@ class PacMan {
           n.y = v.y;
           n.x = v.x-1;
           pac_q.push(n);
-          grid[v.y][v.x-1] = 0;
+          grid[v.y][v.x-1] = empty_square_reward;
           break;
         case 1: 
           break;
@@ -123,7 +262,7 @@ class PacMan {
           n.y = v.y;
           n.x = v.x-1;
           pac_q.push(n);
-          grid[v.y][v.x-1] = 3;
+          grid[v.y][v.x-1] = pellet_reward;
           break;
         case -10:
           death = true;
@@ -135,7 +274,7 @@ class PacMan {
           n.y = v.y-1;
           n.x = v.x;
           pac_q.push(n);
-          grid[v.y-1][v.x] = 0;
+          grid[v.y-1][v.x] = empty_square_reward;
           break;
         case 1: 
           break;
@@ -143,7 +282,7 @@ class PacMan {
           n.y = v.y-1;
           n.x = v.x;
           pac_q.push(n);
-          grid[v.y-1][v.x] = 3;
+          grid[v.y-1][v.x] = pellet_reward;
           break;
         case -10:
           death = true;
@@ -155,7 +294,7 @@ class PacMan {
           n.y = v.y+1;
           n.x = v.x;
           pac_q.push(n);
-          grid[v.y+1][v.x] = 0;
+          grid[v.y+1][v.x] = empty_square_reward;
           break;
         case 1: 
           break;
@@ -163,7 +302,7 @@ class PacMan {
           n.y = v.y+1;
           n.x = v.x;
           pac_q.push(n);
-          grid[v.y+1][v.x] = 3;
+          grid[v.y+1][v.x] = pellet_reward;
           break;
         case -10:
           death = true;
@@ -178,7 +317,7 @@ class PacMan {
           n.y = gv.y;
           n.x = gv.x+1;
           ghost_one_q.push(n);
-          grid[gv.y][gv.x+1] = 0;
+          grid[gv.y][gv.x+1] = ghost_penalty;
           break;
         case 1: 
           break;
@@ -186,7 +325,7 @@ class PacMan {
           n.y = gv.y;
           n.x = gv.x+1;
           ghost_one_q.push(n);
-          grid[gv.y][gv.x+1] = -10;
+          grid[gv.y][gv.x+1] = ghost_penalty;
           break;
           
       }
@@ -196,7 +335,7 @@ class PacMan {
           n.y = gv.y;
           n.x = gv.x-1;
           ghost_one_q.push(n);
-          grid[gv.y][gv.x-1] = 0;
+          grid[gv.y][gv.x-1] = ghost_penalty;
           break;
         case 1: 
           break;
@@ -204,7 +343,7 @@ class PacMan {
           n.y = gv.y;
           n.x = gv.x-1;
           ghost_one_q.push(n);
-          grid[gv.y][gv.x-1] = -10;
+          grid[gv.y][gv.x-1] = ghost_penalty;
           break;
       }
       // Top
@@ -213,7 +352,7 @@ class PacMan {
           n.y = gv.y-1;
           n.x = gv.x;
           ghost_one_q.push(n);
-          grid[gv.y-1][gv.x] = 0;
+          grid[gv.y-1][gv.x] = ghost_penalty;
           break;
         case 1: 
           break;
@@ -221,7 +360,7 @@ class PacMan {
           n.y = gv.y-1;
           n.x = gv.x;
           ghost_one_q.push(n);
-          grid[gv.y-1][gv.x] = -10;
+          grid[gv.y-1][gv.x] = ghost_penalty;
           break;
       }
       // Bottom
@@ -230,7 +369,7 @@ class PacMan {
           n.y = gv.y+1;
           n.x = gv.x;
           ghost_one_q.push(n);
-          grid[gv.y+1][gv.x] = 0;
+          grid[gv.y+1][gv.x] = ghost_penalty;
           break;
         case 1: 
           break;
@@ -238,7 +377,7 @@ class PacMan {
           n.y = gv.y+1;
           n.x = gv.x;
           ghost_one_q.push(n);
-          grid[gv.y+1][gv.x] = -10;
+          grid[gv.y+1][gv.x] = ghost_penalty;
           break;
       }
       
@@ -446,6 +585,9 @@ class PacMan {
   }
 
   void reset() {
+    for (Ghost g : ghosts) {
+      print("Pacman's location: ", x, y, " Ghost's location: ", g.x, g.y);
+    }
     x = reset_x;
     y = reset_y;
     int[][] level_zero_reset = {
@@ -461,8 +603,6 @@ class PacMan {
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
              };
     map.level_one = level_zero_reset;
-    
-    alive = false;
   }
 }  
 
