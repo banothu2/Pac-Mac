@@ -29,7 +29,7 @@ class Ghost {
         blinky();
         break;
       case 1:
-        pinky();
+        random_ghost();
         break;
       case 2:
         break;
@@ -201,6 +201,62 @@ class Ghost {
 
   }
       
+
+  void random_ghost(){
+    
+    pacman_location = new PVector(pacman.x,pacman.y);
+    ghost_location  = new PVector(x,y);
+    if(pacman_location.equals(ghost_location)){
+      pacman.reset();
+    }
+   
+    if(map.intersections[y][x] == 3){
+      int random_direction = int(random(-0.5, 3.5));
+        if (random_direction == 0) {
+          prex = 0;
+          prey = -1;
+        } else if (random_direction == 1) {
+          prex = 0;
+          prey = 1;
+        } else if (random_direction == 2) {
+          prex = -1;
+          prey = 0;
+        } else if (random_direction == 3) {
+          prex = 1;
+          prey = 0;
+        } 
+    } else {
+
+      //move(facing_x, facing_y);
+    }
+    // 
+    if(frameCount%25==0){
+      move(prex,prey);
+      facing_x = 2*prex + int(ghost_location.x);
+      facing_y = 2*prey + int(ghost_location.y);
+    }
+    if(prex==1){
+      text("right",100,800);
+    }
+    if(prex==-1){
+      text("left",100,800);
+    }
+    if(prex==0){
+      text(0,100,800);
+    }
+    if(prey==1){
+      text("down",100,850);
+    }
+    if(prey==-1){
+      text("up",100,850);
+    }
+    if(prey==0){
+      text(0,100,850);
+    }
+    
+
+  }
+  
   void pinky(){
     PVector pacman_location, ghost_location, ghost_target, difference;
     pacman_location = new PVector(pacman.x,pacman.y);

@@ -13,13 +13,18 @@
 
 Map map;
 PacMan pacman;
-int NGHOSTS = 1;
+QLearning QAgent;
+int NGHOSTS = 2;
 ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
+int ntrials;
+float last_trial_reward;
+int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
+int w = 25;
 
 boolean random_move = false;
 void setup(){
-  map = new Map();
-  pacman = new PacMan(9, 8);
+  map = new Map(25);
+  pacman = new PacMan(9, 8, w);
   setup_bots();
 
 
@@ -33,7 +38,7 @@ void setup_bots(){
   int[] ghost_xs = {1, 6};
   int[] ghost_ys = {1, 1};
   for(int i = 0; i < NGHOSTS; i++){
-    Ghost g = new Ghost(0, ghost_xs[i], ghost_ys[i], 20, 25);
+    Ghost g = new Ghost(i, ghost_xs[i], ghost_ys[i], 20, 25);
     ghosts.add(g);
   }
 }
