@@ -39,7 +39,7 @@ class QLearning{
   void step(){
     int s0, s1, a0, a1;
     if(pacman.alive != true){
-      nextTrial();
+      //nextTrial();
       pacman.alive = true;
     }
     
@@ -121,3 +121,4 @@ class QLearning{
   
   
 }
+

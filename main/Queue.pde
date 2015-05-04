@@ -47,3 +47,14 @@ class Coords {
   }
 }
 
+
+class ValueAndDirection{
+  float val; 
+  int direction; 
+  // 0 - LEFT, 1 - RIGHT, 2 - UP, 3 - DOWN
+  ValueAndDirection(float _val, int _direction){
+    this.val = _val;
+    this.direction = _direction;
+  }
+  
+}

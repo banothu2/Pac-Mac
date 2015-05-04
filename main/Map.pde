@@ -153,25 +153,25 @@ class Map {
             pushMatrix();
             translate(xc[i][j]+20, yc[i][j]);
             rotate(HALF_PI);
-            text(nf(QAgent.Q[s][EAST],0,1), 0, 0);
+            //text(nf(QAgent.Q[s][EAST],0,1), 0, 0);
             popMatrix();
             // SOUTH
             pushMatrix();
             translate(xc[i][j], yc[i][j]+20);
             rotate(0);
-            text(nf(QAgent.Q[s][SOUTH],0,1), 0, 0);
+            //text(nf(QAgent.Q[s][SOUTH],0,1), 0, 0);
             popMatrix();
             //WEST
             pushMatrix();
             translate(xc[i][j]-20, yc[i][j]);
             rotate(-HALF_PI);
-            text(nf(QAgent.Q[s][WEST],0,1), 0, 0);
+            //text(nf(QAgent.Q[s][WEST],0,1), 0, 0);
             popMatrix();
             // NORTH
             pushMatrix();
             translate(xc[i][j], yc[i][j]-20);
             rotate(0);
-            text(nf(QAgent.Q[s][NORTH],0,1), 0, 0);
+            //text(nf(QAgent.Q[s][NORTH],0,1), 0, 0);
             popMatrix();   
           }
                  

@@ -21,38 +21,48 @@ float last_trial_reward;
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
 int w = 25;
 
+boolean human_model = false;
+
 boolean random_move = false;
 void setup(){
-  ntrials = 0;
-  map = new Map(w);
+  map = new Map(25);
   pacman = new PacMan(9, 8, w);
-  QAgent = new QLearning();
   setup_bots();
 
-  size(900, 900);
+
+  size(700, 900);
   for(Ghost g: ghosts){  
     g.attack();
   }  
 }
 
 void setup_bots(){
-  int[] ghost_xs = {1, 6};
-  int[] ghost_ys = {1, 1};
+  int[] ghost_xs = {1, 6, 12};
+  int[] ghost_ys = {1, 1, 1};
   for(int i = 0; i < NGHOSTS; i++){
-    Ghost g = new Ghost(0, ghost_xs[i], ghost_ys[i], 20, w);
+    Ghost g = new Ghost(i, ghost_xs[i], ghost_ys[i], 20, 25);
     ghosts.add(g);
   }
+  
+  /*
+  Ghost g = new Ghost(0, ghost_xs[0], ghost_ys[0], 20, 25);
+  ghosts.add(g);
+  Ghost g1 = new Ghost(1, ghost_xs[1], ghost_ys[1], 20, 25);
+  ghosts.add(g1);
+  Ghost g2 = new Ghost(1, ghost_xs[2], ghost_ys[2], 20, 25);
+  ghosts.add(g2);
+  */
 }
 
 void draw(){
   background(0);
   stroke(0);
   map.display();
-  QAgent.step();
   pacman.display(); 
   for(Ghost g: ghosts){  
     g.display();
   }  
+
   
 
   int i=0;
@@ -63,35 +73,25 @@ void draw(){
   }
   
   text("Score: " + pacman.score, 25, 800);
+  //if(frameCount%25==0){
+  if(human_model){
+     step_game();  
+     pacman.find_path();
+  }
+  //}
+  text("Score: " + pacman.score, 0, 800);
 }
 
-void nextTrial() {
-  ntrials++;
-  last_trial_reward = QAgent.summed_reward;
-  QAgent.home();
-  for(Ghost g: ghosts){  
-    g.reset();
-  } 
-  int[][] level_zero_copy = { 
-           {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
-           {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
-           {1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1},
-           {1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1},
-           {1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1},
-           {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
-           {1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1},
-           {1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1, 2, 1},
-           {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
-           {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-             }; 
-  map.level_one = level_zero_copy;
+void next_move(){
+    pacman.find_path();
+    step_game();  
 }
 
 void step_game(){
   for(Ghost g: ghosts){  
     g.attack();
   }  
-  move_randomly();
+  //move_randomly();
 }
 
 void move_randomly(){
@@ -122,5 +122,5 @@ void keyPressed() {
     random_move = !random_move;
   } else if (key == 's') {
     step_game();
-  }
+  } 
 }
