@@ -173,30 +173,25 @@ class Ghost {
       move(prex,prey);
 
     }
+    text("Blinky Direction: ", 75, 800);
     if(prex==1){
-      text("right",100,800);
+      text("right",175,800);
     }
     if(prex==-1){
-      text("left",100,800);
-    }
-    if(prex==0){
-      text(0,100,800);
+      text("left",175,800);
     }
     if(prey==1){
-      text("down",100,850);
+      text("down",175,800);
     }
     if(prey==-1){
-      text("up",100,850);
-    }
-    if(prey==0){
-      text(0,100,850);
+      text("up", 175,800);
     }
     
-    text(ghost_target.x,200,800);
-    text(ghost_target.y,200,850);
-    text(oprex,250,800);
-    text(oprey,250,850);
-    text(checker, 350, 800);
+    //text(ghost_target.x,200,800);
+    //text(ghost_target.y,200,850);
+    //text(oprex,250,800);
+    //text(oprey,250,850);
+    //text(checker, 350, 800);
       facing_x = prex + int(ghost_location.x);
       facing_y = prey + int(ghost_location.y);
   }
@@ -241,23 +236,18 @@ class Ghost {
     if(frameCount%25==1){
       move(prex,prey);
     }
+    text("Pinky Direction: ", 225,800);
     if(prex==1){
-      text("right",100,800);
+      text("right",325,800);
     }
     if(prex==-1){
-      text("left",100,800);
-    }
-    if(prex==0){
-      text(0,100,800);
+      text("left",325,800);
     }
     if(prey==1){
-      text("down",100,850);
+      text("down",325,800);
     }
     if(prey==-1){
-      text("up",100,850);
-    }
-    if(prey==0){
-      text(0,100,850);
+      text("up",325,800);
     }
     
       facing_x = prex + int(ghost_location.x);
@@ -381,22 +371,16 @@ class Ghost {
     }
     
     if(prex==1){
-      text("right",100,800);
+      text("right",100,850);
     }
     if(prex==-1){
-      text("left",100,800);
-    }
-    if(prex==0){
-      text(0,100,800);
+      text("left",100,850);
     }
     if(prey==1){
       text("down",100,850);
     }
     if(prey==-1){
       text("up",100,850);
-    }
-    if(prey==0){
-      text(0,100,850);
     }
   }
 /*

@@ -19,16 +19,17 @@ ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
 int ntrials;
 float last_trial_reward;
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
-int w = 25;
-
+int w = 50;
+boolean showQ = false;
 boolean random_move = false;
+boolean rLearningMode = false;
+
 void setup(){
-  map = new Map(25);
+  map = new Map(w);
   pacman = new PacMan(9, 8, w);
   setup_bots();
-
-
-  size(700, 900);
+  QAgent = new QLearning();
+  size(1400, 900);
   for(Ghost g: ghosts){  
     g.attack();
   }  
@@ -38,7 +39,7 @@ void setup_bots(){
   int[] ghost_xs = {1, 6, 12};
   int[] ghost_ys = {1, 1, 1};
   for(int i = 0; i < NGHOSTS; i++){
-    Ghost g = new Ghost(i, ghost_xs[i], ghost_ys[i], 20, 25);
+    Ghost g = new Ghost(i, ghost_xs[i], ghost_ys[i], 20, w);
     ghosts.add(g);
   }
   
@@ -61,11 +62,21 @@ void draw(){
     g.display();
   }  
   //if(frameCount%25==0){
+  if(rLearningMode == false){
     step_game();
     
     pacman.find_path();
-  //}
-  text("Score: " + pacman.score, 0, 800);
+  }
+  else{
+    QAgent.step();
+  }
+  display_info();
+}
+
+void nextTrial(){
+  last_trial_reward = QAgent.summed_reward;
+  QAgent.home();
+  pacman.reset();
 }
 
 void next_move(){
@@ -90,6 +101,13 @@ void move_randomly(){
   }
 }
 
+void display_info(){
+  text("Score: " + pacman.score, 0, 800);
+  if(rLearningMode == true)
+    text("Reinforcement Learning Mode On", 0, 780);
+  else
+    text("Reinforcement Learning Mode Off", 0, 780);
+}
 
 void keyPressed() {
   if (key == CODED) {
@@ -108,5 +126,9 @@ void keyPressed() {
     random_move = !random_move;
   } else if (key == 's') {
     step_game();
-  } 
+  } else if (key == 'r') {
+    rLearningMode = !rLearningMode;
+  } else if (key == 'q') {
+    showQ = !showQ;
+  }
 }
