@@ -19,17 +19,13 @@ ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
 int ntrials;
 float last_trial_reward;
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
-<<<<<<< HEAD
-int w = 25;
 
 boolean human_model = false;
 
 boolean vector_model = false;
 
-=======
 int w = 50;
 boolean showQ = false;
->>>>>>> origin/master
 boolean random_move = false;
 boolean rLearningMode = false;
 
@@ -37,12 +33,9 @@ void setup(){
   map = new Map(w);
   pacman = new PacMan(9, 8, w);
   setup_bots();
-<<<<<<< HEAD
   size(700, 900);
-=======
   QAgent = new QLearning();
   size(1400, 900);
->>>>>>> origin/master
   for(Ghost g: ghosts){  
     g.attack();
   }  
@@ -74,10 +67,6 @@ void draw(){
   for(Ghost g: ghosts){  
     g.display();
   }  
-<<<<<<< HEAD
-
-  
-
   int i=0;
   for(Ghost g: ghosts){
     if(i==0&&vector_model){
@@ -86,8 +75,8 @@ void draw(){
   }
   
   text("Score: " + pacman.score, 25, 800);
-=======
->>>>>>> origin/master
+
+
   //if(frameCount%25==0){
   if(rLearningMode == false){
     step_game();
@@ -153,17 +142,14 @@ void keyPressed() {
     random_move = !random_move;
   } else if (key == 's') {
     step_game();
-<<<<<<< HEAD
   } else if(key== 'v'){
      vector_model=true;
      human_model=false;
-=======
   } else if (key == 'l') {
     pacman.x = QAgent.ix;
     pacman.y = QAgent.iy;
     rLearningMode = !rLearningMode;
   } else if (key == 'q') {
     showQ = !showQ;
->>>>>>> origin/master
   }
 }
