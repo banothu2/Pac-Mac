@@ -126,7 +126,9 @@ void keyPressed() {
     random_move = !random_move;
   } else if (key == 's') {
     step_game();
-  } else if (key == 'r') {
+  } else if (key == 'l') {
+    pacman.x = QAgent.ix;
+    pacman.y = QAgent.iy;
     rLearningMode = !rLearningMode;
   } else if (key == 'q') {
     showQ = !showQ;

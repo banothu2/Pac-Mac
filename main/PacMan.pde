@@ -12,6 +12,11 @@ class PacMan {
   int[][] PacMap;
   int reset_x; 
   int reset_y;
+  PVector Pacman_target, difference,pacman_location,ghost_location;
+  int prex, prey;
+  Ghost temp;
+  int pellets_right, pellets_left, pellets_up, pellets_down;
+
   int max_depth_for_search = 6;
   int[][] memo = {
            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
@@ -28,6 +33,7 @@ class PacMan {
   int ghost_penalty = -30;
   int pellet_reward = 3;
   int empty_square_reward = 4;
+
   PacMan(int _x, int _y, int _w) {
     x = _x;
     y = _y; // 23
@@ -611,6 +617,7 @@ class PacMan {
     }
     
   }
+
   */
   
   void display_pacmap() {
@@ -627,7 +634,6 @@ class PacMan {
         switch(PacMap[j][i]) {
         case 1: 
           fill(100, 150, 250);
-          ;
           rect(offset_x + i*w, offset_y + j*w, w, w); 
           break;
         case 2: 
@@ -646,6 +652,99 @@ class PacMan {
       }
     }
   }
+
+  
+  void solve(Ghost temp){
+     consume();
+      for(int i=1;i<5;i++){
+     if( (x+i) < map.nx && map.level_zero[y][x+i]==2){
+         pellets_right += map.level_zero[y][x+i];
+     }
+     if(x-i>map.nx && map.level_zero[y][x-i]==2){
+       pellets_left += map.level_zero[y][x-i];
+     }
+     if(y-i<map.ny && map.level_zero[y-i][x]==2){
+       pellets_up += map.level_zero[y-i][x];
+     }
+    if(y+i>map.ny && map.level_zero[y-i][x]==2){
+       pellets_down += map.level_zero[y+i][x];
+    }
+    }
+
+     pacman_location = new PVector(x,y);
+     ghost_location = new PVector(temp.x,temp.y);
+     difference = PVector.sub(pacman_location, ghost_location);
+     Pacman_target= new PVector(-difference.x,-difference.y);
+     if(difference.mag()<10){
+     if (abs(Pacman_target.x) > abs(Pacman_target.y)){
+        if (Pacman_target.x >= 0 && check_left()){
+          prex = -1;
+          prey = 0;
+        } else if ( Pacman_target.x <= 0 && check_right()){
+          prex = 1; 
+          prey = 0;
+        } 
+        else if (Pacman_target.y >= 0 && check_up() ){
+          prex = 0;
+          prey = -1;
+        } else if (Pacman_target.y<=0 && check_down() ){
+          prex = 0;
+          prey = 1;
+        }
+         else if(check_up() ){
+         prex = 0;
+         prey = -1;
+         }
+         else if(check_down()){
+         prex = 0;
+         prey = 1;
+         }
+      } else {
+        if (Pacman_target.y >= 0 && check_up()){
+          prex = 0;
+          prey = -1;
+        } else if (Pacman_target.y<=0 && check_down()){
+          prex = 0;
+          prey = 1;
+        }
+        else if (Pacman_target.x >= 0 && check_left()){
+          prex = -1;
+          prey = 0;
+        } else if ( Pacman_target.x <= 0 && check_right() ){
+          prex = 1; 
+          prey = 0;
+        } 
+        else if(check_left()){
+          prex = -1;
+          prey = 0;
+        }
+        else if(check_right()){
+          prex = 1; 
+          prey = 0;
+        }
+      }}
+ else{
+    if(pellets_right>pellets_left&&pellets_right>pellets_down&&pellets_right>pellets_up){
+          prex = 1; 
+          prey = 0;  
+    }
+        if(pellets_left>pellets_right&&pellets_left>pellets_down&&pellets_left>pellets_up){
+          prex = -1; 
+          prey = 0;  
+    }
+        if(pellets_up>pellets_left&&pellets_up>pellets_down&&pellets_up>pellets_right){
+          prex = 0; 
+          prey = -1;  
+    }
+    if(pellets_down>pellets_left&&pellets_down>pellets_right&&pellets_down>pellets_up){
+          prex = 0; 
+          prey = 1;  
+    }
+ }
+    if(frameCount%25==0){
+      move(prex,prey);
+    }
+}
 
   void move(int _x, int _y) {
     int x_val = _x;
@@ -726,6 +825,7 @@ class PacMan {
     ellipse(x*w+(w/2) + transition_x, y*w+(w/2) + transition_y, r, r);
   }
 
+
   void reset() {
     //for (Ghost g : ghosts) {
       //print("Pacman's location: ", x, y, " Ghost's location: ", g.x, g.y);
@@ -745,6 +845,32 @@ class PacMan {
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
              };
     map.level_one = level_zero_reset;
+
+    
+    alive = false;
+  }
+  
+
+  
+  boolean check_right(){
+    if(map.intersections[y][x+1] != 1) return true;
+    else return false;
+  }
+  
+  boolean check_left(){
+    if(map.intersections[y][x-1] != 1) return true;
+    else return false;
+  }
+  
+  boolean check_up(){
+    if(map.intersections[y-1][x]!=1) return true;
+    else return false;
+  }
+  
+  boolean check_down(){
+    if(map.intersections[y+1][x]!=1) return true;
+    else return false;
+
   }
 }  
 
