@@ -17,12 +17,22 @@ QLearning QAgent;
 int NGHOSTS = 2;
 int NTEST = 0;
 ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
+<<<<<<< HEAD
 int deaths[] = {0,0,0};
+=======
+float[][] value_right;
+float[][] value_left;
+float[][] value_up;
+float[][] value_down;
+>>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
 
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
 boolean random_move = false;
 
+boolean random_move_ghost=false;
+
 int game_mode = -1;
+int a=1000;
 /*
   Game mode values: 
    -1  : No Model 
@@ -39,7 +49,11 @@ int pacman_start_x = 9;
 int pacman_start_y = 8;
 
 // Variables for Qlearning model 
+<<<<<<< HEAD
 int nRLTrials = 0;
+=======
+int ntrials=0;;
+>>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
 float last_trial_reward;
 boolean showQ = false;
 int oldX, oldY;
@@ -51,9 +65,21 @@ void setup(){
   size(700, 900);
   QAgent = new QLearning();
   size(game_width, game_height);
+  value_right= new float[a][a];
+  value_left= new float[a][a];
+  value_down= new float[a][a];
+  value_up= new float[a][a];
   for(Ghost g: ghosts){  
     g.attack();
   }  
+  for(int i=0;i<1000;i++){
+    for(int j=0;j<1000;j++){
+    value_right[i][j]=0;
+    value_left[i][j]=0;
+    value_down[i][j]=0;
+    value_up[i][j]=0;
+  }
+  }
 }
 
 void setup_bots(){
@@ -78,7 +104,7 @@ void draw(){
     else
       g.display();
   }  
-  
+  //if(frameCount%1000==0){random_move_ghost= !random_move_ghost;}
   // Toggles between the various PacMan Playing models 
   switch(game_mode){
     case -1:
@@ -93,7 +119,8 @@ void draw(){
       pacman.find_path();
       break;
     case 2: 
-      //pacman.solve();
+      step_game();
+      pacman.solve();
       break;
     default: 
       game_mode = -1;
@@ -180,10 +207,14 @@ void keyPressed() {
     random_move = !random_move;
   } else if (key == 's') {
     step_game();
+<<<<<<< HEAD
   } else if (key == 'l' && game_mode != 0) {
     map.level_one = map.level_zero_copy_RL;
     oldX = pacman.x;
     oldY = pacman.y;
+=======
+  } else if (key == 'l') {
+>>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
     pacman.x = QAgent.ix;
     pacman.y = QAgent.iy;
     game_mode = 0;

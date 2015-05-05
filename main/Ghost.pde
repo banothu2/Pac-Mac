@@ -9,6 +9,11 @@ class Ghost {
   int facing_x, facing_y;
   int startX, startY;
   
+  int x_corner = 1;
+  int y_corner = 1;
+  
+  boolean targetted_attack = true;
+  
   PVector pacman_location, blinky_location, ghost_location, ghost_target, difference1, difference2, difference;
   Ghost(int _type, int _x, int _y, int _r, int _w){
     x = _x;
@@ -30,9 +35,44 @@ class Ghost {
   }
   
   void attack(){
+    if(frameCount%25 == 1){
+      if(frameCount % 250 == 1){
+        targetted_attack = !targetted_attack;
+          int x_rand = int(random(0, 2));
+          int y_rand = int(random(0, 2));
+          switch(x_rand){
+            case 0: 
+              x_corner = 1;
+              break;
+            case 1:
+              x_corner = map.ny - 2;
+              break;
+            default: 
+              break;
+          }
+          switch(y_rand){
+            case 0: 
+              y_corner = 1;
+              break;
+            case 1:
+              y_corner = map.nx - 2;
+              break;
+            default: 
+              break;
+          }
+      }
+    }
     switch(type){
       case 0: 
-        blinky();
+        if(targetted_attack){
+          blinky(pacman.x, pacman.y);
+        } else {
+
+          
+          //int x_corner = 1;//int(random(0, 1)): 1 ? map.nx -1;
+          //int y_corner = 1;//int(random(0, 1)): 1 ? map.ny -1;
+          blinky(x_corner, y_corner);
+        }
         break;
       case 1:
         random_ghost();
@@ -44,12 +84,12 @@ class Ghost {
     } 
   }
   
-  /*void blinky(){
-    PVector pacman_location, ghost_location, ghost_target, difference;
-    pacman_location = new PVector(pacman.x,pacman.y);
+  void blinky(int _x, int _y){
+    pacman_location = new PVector(_x,_y);
     ghost_location  = new PVector(x,y);
     ghost_target    = new PVector(0,0);
     difference      = new PVector(0,0);
+<<<<<<< HEAD
     
     difference      = PVector.sub(ghost_location, pacman_location);
     
@@ -92,16 +132,16 @@ class Ghost {
     ghost_target    = new PVector(0,0);
     difference      = new PVector(0,0);
     if(pacman_location.equals(ghost_location)){
+=======
+    if(pacman_location.equals(ghost_location) && targetted_attack){
+>>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
       pacman.reset();
     }
     // Gets the vector that points from Ghost to Pacman
-    //difference      = PVector.sub(pacman_location, ghost_location);
     difference        = PVector.sub(ghost_location, pacman_location);
-    
     
     stroke(0, 255, 0);
     line(pacman_location.x*w + (w/2), pacman_location.y*w + (w/2), ghost_location.x*w + (w/2), ghost_location.y*w + (w/2));
-    //line(ghost_location.x, ghost_location.y, ghost_location.x + difference.x, ghost_location.y + difference.y);
     noStroke();
     
     oprex=prex;
@@ -173,11 +213,14 @@ class Ghost {
         }
       }
     }
-    // 
-    if(frameCount%25==1){
-      move(prex,prey);
 
+
+
+    if(frameCount%25 == 1){
+        move(prex,prey);
     }
+    
+
     text("Blinky Direction: ", 75, 800);
     if(prex==1){
       text("right",175,800);
@@ -192,20 +235,14 @@ class Ghost {
       text("up", 175,800);
     }
     
-    //text(ghost_target.x,200,800);
-    //text(ghost_target.y,200,850);
-    //text(oprex,250,800);
-    //text(oprey,250,850);
-    //text(checker, 350, 800);
-      facing_x = prex + int(ghost_location.x);
-      facing_y = prey + int(ghost_location.y);
+    facing_x = prex + int(ghost_location.x);
+    facing_y = prey + int(ghost_location.y);
   }
       
 
   void random_ghost(){
     pacman_location = new PVector(pacman.x,pacman.y);
     ghost_location  = new PVector(x,y);
-    //print(x, y, "\n");
     if(pacman_location.equals(ghost_location)){
       pacman.reset();
       print("PACMAN AND RANDOM AT SAME LOCATION");
@@ -237,6 +274,7 @@ class Ghost {
   
         //move(facing_x, facing_y);
       }
+<<<<<<< HEAD
       // 
       if(frameCount%25==1){
         move(prex,prey);
@@ -257,6 +295,31 @@ class Ghost {
       
         facing_x = prex + int(ghost_location.x);
         facing_y = prey + int(ghost_location.y);
+=======
+    } else {
+      //move(facing_x, facing_y);
+    }
+    
+    if(frameCount%25==1){
+      move(prex,prey);
+    }
+    text("Pinky Direction: ", 225,800);
+    if(prex==1){
+      text("right",325,800);
+    }
+    if(prex==-1){
+      text("left",325,800);
+    }
+    if(prey==1){
+      text("down",325,800);
+    }
+    if(prey==-1){
+      text("up",325,800);
+    }
+    
+    facing_x = prex + int(ghost_location.x);
+    facing_y = prey + int(ghost_location.y);
+>>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
   }
   
   void pinky(){
@@ -318,10 +381,10 @@ class Ghost {
         break;
     }
     
-      // Intersection or box - Ghost gets a new target
+     // Intersection or box - Ghost gets a new target
      // Intersection or box - Ghost gets a new target
     if(map.intersections[y][x] == 3 || map.intersections[y][x] == 0){
-      // If x component is larger than y, it should move horizontally.
+     // If x component is larger than y, it should move horizontally.
      ghost_target =  PVector.sub(ghost_location, ghost_target);
       if (abs(ghost_target.x) > abs(ghost_target.y)){
         if (ghost_target.x > 0 && map.intersections[y][x-1] != 1 
@@ -364,12 +427,9 @@ class Ghost {
       }
     }
     
-    
     stroke(0, 255, 0);
     line(ghost_target.x*w + (w/2), ghost_target.y*w + (w/2), ghost_location.x*w + (w/2), ghost_location.y*w + (w/2));
-    //line(ghost_location.x, ghost_location.y, ghost_location.x + difference.x, ghost_location.y + difference.y);
     noStroke();
-    
     
     if(frameCount % 25 == 0){
       move(prex,prey);  

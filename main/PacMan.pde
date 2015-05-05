@@ -10,9 +10,17 @@ class PacMan {
   int transition_y = 0;
   boolean alive, resetPM;
   int[][] PacMap;
+<<<<<<< HEAD
   int reset_x, reset_y;
   PVector Pacman_target, difference,pacman_location,ghost_location;
   int prex, prey;
+=======
+  int reset_x; 
+  int reset_y;
+  float ala,alb,alc,ald;
+  PVector Pacman_target, difference, pacman_location, ghost_location, total_difference;
+  int prex, prey,bestx,besty;
+>>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
   Ghost temp;
   int pellets_right, pellets_left, pellets_up, pellets_down;
 
@@ -654,89 +662,159 @@ class PacMan {
   }
 
   
-  void solve(Ghost temp){
+  void solve(){
+    //creates list of positions of ghosts
+    pellets_right=0;
+    pellets_left=0;
+    pellets_up=0;
+    pellets_down=0;
+    pacman_location = new PVector(x,y);
+    float total=0;
+    float best=0;
+    int alive=ntrials;
+    float prob=0;
+    float T = (float) 10/ntrials;
+    ArrayList<PVector> gpositions = new ArrayList<PVector>(NGHOSTS);
+    ArrayList<PVector> differences = new ArrayList<PVector>(NGHOSTS);
+    int counter_gpositions=0;
+    total_difference = new PVector(0,0);
+    for(Ghost g: ghosts){  
+        gpositions.add(new PVector(g.x,g.y));
+    }
      consume();
-      for(int i=1;i<5;i++){
-     if( (x+i) < map.nx && map.level_zero[y][x+i]==2){
-         pellets_right += map.level_zero[y][x+i];
-     }
-     if(x-i>map.nx && map.level_zero[y][x-i]==2){
-       pellets_left += map.level_zero[y][x-i];
-     }
-     if(y-i<map.ny && map.level_zero[y-i][x]==2){
-       pellets_up += map.level_zero[y-i][x];
-     }
-    if(y+i>map.ny && map.level_zero[y-i][x]==2){
-       pellets_down += map.level_zero[y+i][x];
+     //Calculates number of pellets in a radius of 4 units away from ghost
+     for(int i=1;i<5;i++){
+       if( (x+i) < map.ny){
+         if(map.level_zero[y][x+i]==2){
+           pellets_right += map.level_zero[y][x+i];
+         }
+       } 
+       if((x-i) > map.ny){
+         if( map.level_zero[y][x-i]==2){
+           pellets_left += map.level_zero[y][x-i];
+         }
+       }
+       if((y-i) > 0){
+         if(map.level_zero[y-i][x]==2){
+           pellets_up += map.level_zero[y-i][x];
+         }
+       }
+       if((y+i) < map.nx){
+         if( map.level_zero[y+i][x]==2){
+           pellets_down += map.level_zero[y+i][x];
+         }
+       }
     }
+    
+    
+    
+    for(int i=0;i<NGHOSTS;i++){
+      difference = PVector.sub(pacman_location, gpositions.get(0));
+      differences.add(new PVector(difference.x,difference.y));
+      total_difference.add(differences.get(i));
     }
-
-     pacman_location = new PVector(x,y);
-     ghost_location = new PVector(temp.x,temp.y);
-     difference = PVector.sub(pacman_location, ghost_location);
-     Pacman_target= new PVector(-difference.x,-difference.y);
-     if(difference.mag()<10){
-     if (abs(Pacman_target.x) > abs(Pacman_target.y)){
-        if (Pacman_target.x >= 0 && check_left()){
-          prex = -1;
-          prey = 0;
-        } else if ( Pacman_target.x <= 0 && check_right()){
-          prex = 1; 
-          prey = 0;
-        } 
-        else if (Pacman_target.y >= 0 && check_up() ){
+    total_difference.normalize();
+    Pacman_target= new PVector(-total_difference.x,-total_difference.y);
+    
+    float nearestx = total_difference.x*200;
+    float nearesty = total_difference.y*200;
+    nearestx = round(nearestx)+200;
+    nearesty =  round(nearesty)+200;
+    ala = value_right[(int)nearestx][(int)nearesty];
+    alb = value_left[(int)nearestx][(int)nearesty];
+    alc = value_down[(int)nearestx][(int)nearesty];
+    ald = value_up[(int)nearestx][(int)nearesty];
+    if(ala>=10||alb>=10||alc>=10||ald>=10){
+    if(ala >= alb && ala >= alc && ala >= ald){
+       bestx=1;
+       besty=0;
+       best=ala;
+    }
+    else if(alb >= ala && alb >= alc &&alb >= ald){
+       bestx=-1;
+       besty=0;
+       best=alb;
+    }
+    else if(alc >= ala && alc >= alb && alc >= ald){
+       bestx = 0;
+       besty = 1;
+       best=alc;
+    }
+    else{
+        bestx=0;
+        besty=-1;
+        best=ald;
+    }
+    total=pow(2.718,ala/T)+pow(2.718,alb/T)+pow(2.718,alc/T)+pow(2.718,ald/T);
+    prob = pow(2.718,best/T);
+    
+    if(random(1)<prob){prex=bestx; prey=besty;}
+    else{prex=(int)random(1);prey=(int)random(1)-prex;}
+    constrain(prex,0,1);}
+    
+     else if(difference.mag()<10){
+       if (abs(Pacman_target.x) > abs(Pacman_target.y)){
+         if (Pacman_target.x >= 0 && check_left()){
+           prex = -1;
+           prey = 0;
+         } else if ( Pacman_target.x <= 0 && check_right()){
+           prex = 1; 
+           prey = 0;
+         } 
+         else if (Pacman_target.y >= 0 && check_up() ){
+           prex = 0;
+           prey = -1;
+         } else if (Pacman_target.y<=0 && check_down() ){
+           prex = 0;
+           prey = 1;
+         }
+          else if(check_up() ){
           prex = 0;
           prey = -1;
-        } else if (Pacman_target.y<=0 && check_down() ){
+         }
+          else if(check_down()){
           prex = 0;
           prey = 1;
+          }
+        } else {
+          if (Pacman_target.y >= 0 && check_up()){
+            prex = 0;
+            prey = -1;
+          } else if (Pacman_target.y<=0 && check_down()){
+            prex = 0;
+            prey = 1;
+          }
+          else if (Pacman_target.x >= 0 && check_left()){
+            prex = -1;
+            prey = 0;
+          } else if ( Pacman_target.x <= 0 && check_right() ){
+            prex = 1; 
+            prey = 0;
+          } 
+          else if(check_left()){
+            prex = -1;
+            prey = 0;
+          }
+          else if(check_right()){
+            prex = 1; 
+            prey = 0;
+          }
         }
-         else if(check_up() ){
-         prex = 0;
-         prey = -1;
-         }
-         else if(check_down()){
-         prex = 0;
-         prey = 1;
-         }
-      } else {
-        if (Pacman_target.y >= 0 && check_up()){
-          prex = 0;
-          prey = -1;
-        } else if (Pacman_target.y<=0 && check_down()){
-          prex = 0;
-          prey = 1;
-        }
-        else if (Pacman_target.x >= 0 && check_left()){
-          prex = -1;
-          prey = 0;
-        } else if ( Pacman_target.x <= 0 && check_right() ){
-          prex = 1; 
-          prey = 0;
-        } 
-        else if(check_left()){
-          prex = -1;
-          prey = 0;
-        }
-        else if(check_right()){
-          prex = 1; 
-          prey = 0;
-        }
-      }}
+      }
  else{
-    if(pellets_right>pellets_left&&pellets_right>pellets_down&&pellets_right>pellets_up){
+    if(pellets_right >= pellets_left && pellets_right >= pellets_down && pellets_right>=pellets_up){
           prex = 1; 
           prey = 0;  
     }
-        if(pellets_left>pellets_right&&pellets_left>pellets_down&&pellets_left>pellets_up){
+    else if(pellets_left >= pellets_right && pellets_left >= pellets_down && pellets_left >= pellets_up){
           prex = -1; 
           prey = 0;  
     }
-        if(pellets_up>pellets_left&&pellets_up>pellets_down&&pellets_up>pellets_right){
+    else if(pellets_up >= pellets_left && pellets_up >= pellets_down && pellets_up>=pellets_right){
           prex = 0; 
           prey = -1;  
     }
-    if(pellets_down>pellets_left&&pellets_down>pellets_right&&pellets_down>pellets_up){
+    else if(pellets_down >= pellets_left && pellets_down >= pellets_right && pellets_down >= pellets_up){
           prex = 0; 
           prey = 1;  
     }
@@ -744,6 +822,20 @@ class PacMan {
     if(frameCount%25==0){
       move(prex,prey);
     }
+    for(Ghost g: ghosts){  
+      PVector g_location= new PVector(g.x,g.y);
+        if(pacman_location != g_location){
+          if(prex==1){value_right[(int)nearestx][(int)nearesty]+=0.5;}
+          if(prex==-1){value_left[(int)nearestx][(int)nearesty]+=0.5;}
+          if(prey==1){value_down[(int)nearestx][(int)nearesty]+=0.5;}
+          if(prey==-1){value_up[(int)nearestx][(int)nearesty]+=0.5;}
+        }
+        else{if(prex==1){value_right[(int)nearestx][(int)nearesty]-=0.5;}
+          if(prex==-1){value_left[(int)nearestx][(int)nearesty]-=0.5;}
+          if(prey==1){value_down[(int)nearestx][(int)nearesty]-=0.5;}
+          if(prey==-1){value_up[(int)nearestx][(int)nearesty]-=0.5;}}
+    }
+    
 }
 
   void move(int _x, int _y) {
@@ -845,6 +937,7 @@ class PacMan {
            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
              };
+<<<<<<< HEAD
     x = reset_x;
     y = reset_y;
     resetPM = true;
@@ -854,6 +947,13 @@ class PacMan {
       map.level_one = level_zero_reset;
       score = 0;
     }
+=======
+    map.level_one = level_zero_reset;
+
+    
+    alive = false;
+    ntrials++;
+>>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
   }
   
 
