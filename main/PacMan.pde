@@ -8,7 +8,7 @@ class PacMan {
   boolean moving_one_block = false;
   int transition_x = 0;
   int transition_y = 0;
-  boolean alive;
+  boolean alive, resetPM;
   int[][] PacMap;
   int reset_x; 
   int reset_y;
@@ -45,6 +45,7 @@ class PacMan {
     w = _w;
     score = -1;
     alive = true;
+    resetPM = false;
     consume();
     reset_x = _x;
     reset_y = _y;
@@ -320,7 +321,7 @@ class PacMan {
   }
 
   
-  void solve(Ghost temp){
+  void solve(){
      consume();
       for(int i=1;i<5;i++){
      if( (x+i) < map.nx && map.level_zero[y][x+i]==2){
