@@ -1,7 +1,7 @@
 class PacMan {
   int x;
   int y; 
-  int r; 
+  int r = 20; 
   int w;                      // Cell size (pixels)
   int score;
   int movement_direction = -1;       // -1 = no movement. 0 = up, 1 = down, 2 = left, 3 = right
@@ -17,6 +17,7 @@ class PacMan {
   Ghost temp;
   int pellets_right, pellets_left, pellets_up, pellets_down;
 
+  int last_direction = 0; 
   int max_depth_for_search = 6;
   int[][] memo = {
            {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 
@@ -33,11 +34,14 @@ class PacMan {
   int ghost_penalty = -30;
   int pellet_reward = 3;
   int empty_square_reward = 4;
-
+  int death_penalty = -1000;
+  int wall_penalty = -1000;
+  int bfs_pacman_foresight = 10;
+  int bfs_ghost_foresight = 10;
+  
   PacMan(int _x, int _y, int _w) {
     x = _x;
     y = _y; // 23
-    r = 20;
     w = _w;
     score = -1;
     alive = true;
@@ -46,18 +50,14 @@ class PacMan {
     reset_y = _y;
     PacMap = map.level_zero_copy;
   }
-
-
-  float get_x() {
-    return x;
-  }
-
+  
   void update(int _x, int _y) {
     consume();
     move(_x, _y);
   }
 
   void find_path() {
+    // Copy values from current map over to pacmap 
     for (int i = 0; i < map.ny; i++) {
       for (int j = 0; j < map.nx; j++) {
         int val =  map.level_one[j][i];
@@ -65,9 +65,12 @@ class PacMan {
       }
     }
     
+    // Perform BFS algo to find scope paths for Pacman and Ghosts 
     int i = 0;
     for (Ghost g : ghosts) {
-      PacMap[g.y][g.x] = -10;
+      // Set current ghost location to penalty
+      PacMap[g.y][g.x] = ghost_penalty;
+      // For all but the last ghost, create their BFS stuff seperately 
       if(i < NGHOSTS - 1){
         BFS_ghost(PacMap, g);
       } else {
@@ -75,15 +78,17 @@ class PacMan {
       }
       i++;
     } 
-    if(frameCount%25==0){
+    
+    // Update at every 25th cycle. 
+    if(frameCount % 25 == 0){
+      
       memo[y][x] = 1;
       ValueAndDirection best_dir = new ValueAndDirection(0, 0);
       best_dir = pick_direction(x, y, 0, 0);
       memo[y][x] = 0;
-      //print("Best direction val, and direction: ", best_dir.val, best_dir.direction, "\n");
       
+      //print("Best value: ", best_dir.val);
       /*
-      print("Best value: ", best_dir.val);
       switch(best_dir.direction){
         case 0: 
           print(" LEFT \n");
@@ -99,125 +104,71 @@ class PacMan {
           break;  
       }
       */
+      
       int x_val = 0;
       int y_val = 0;
       switch(best_dir.direction){
         case 0: 
-          update(-1, 0);
+          update(-1,  0);
           break;
         case 1:
-          update( 1, 0);
+          update( 1,  0);
           break;
         case 2:
-          update(0, -1);
+          update( 0, -1);
           break; 
         case 3: 
-          update(0,  1);
+          update( 0,  1);
           break;  
       }
     }
     
-    //paused = !paused;
-    //BFS_p_n_g(PacMap, x, y, ghosts);
-    //BFS_pacman(PacMap, x, y);
-    // Find where the Ghosts are in the map and mark it 
-
     // Find where pac man is in the map and mark it
     display_pacmap();
   }
   
   ValueAndDirection pick_direction(int _x, int _y, int _prev, int _depth){
-     // Need to try all 4 directions 
-     // Need to return best value and direction pair.    
-
-     float[] cardinals = {0, 0, 0, 0};
-     // LEFT - grid[v.y][v.x-1]
-     if(_depth < 5){
-       if( (PacMap[_y][_x-1] == pellet_reward || PacMap[_y][_x-1] == ghost_penalty || PacMap[_y][_x-1] == empty_square_reward) && memo[_y][_x-1] == 0 ){
-           memo[_y][_x-1] = 1;
-           _depth = _depth + 1;
-           ValueAndDirection recurse = new ValueAndDirection(0, 0);
-           recurse = pick_direction(_x-1, _y, PacMap[_y][_x-1], _depth);
-           if(PacMap[_y][_x-1] == empty_square_reward){
-             cardinals[0] = 1 + (recurse.val)*(1.0/(_depth*_depth));
-           } else {
-             cardinals[0] = PacMap[_y][_x-1] + (recurse.val)*(1.0/(_depth*_depth));
-           }
-           //PacMap[_y][_x-1] = -10;
-           //print(PacMap[_y][_x-1], _depth, _y, _x-1, cardinals[0], "\n");
-            memo[_y][_x-1] = 0;
-       }
-       
-       // RIGHT - grid[v.y][v.x+1]
-       if( (PacMap[_y][_x+1] == pellet_reward || PacMap[_y][_x+1] == ghost_penalty || PacMap[_y][_x+1] == empty_square_reward) && memo[_y][_x+1] == 0 ){
-           memo[_y][_x+1] = 1; // Mark as traveled.
-           _depth = _depth + 1;
-           ValueAndDirection recurse = new ValueAndDirection(0, 0);
-           recurse = pick_direction(_x+1, _y, PacMap[_y][_x+1], _depth);
-          if(PacMap[_y][_x+1] == empty_square_reward){
-             cardinals[1] = 1 + (recurse.val)*(1.0/(_depth*_depth));
-           } else {
-             cardinals[1] = PacMap[_y][_x+1] + (recurse.val)*(1.0/(_depth*_depth));
-           }
-           //PacMap[_y][_x+1] = -10;
-           memo[_y][_x+1] = 0;
-       }
-       // TOP - grid[v.y-1][v.x]
-      if( (PacMap[_y-1][_x] == pellet_reward || PacMap[_y-1][_x] == ghost_penalty || PacMap[_y-1][_x] == 4) && memo[_y-1][_x] == 0 ){
-           memo[_y-1][_x] = 1; // Mark as traveled.
-           _depth = _depth + 1;
-           ValueAndDirection recurse = new ValueAndDirection(0, 0);
-           recurse = pick_direction(_x, _y-1, PacMap[_y-1][_x], _depth);
-           if(PacMap[_y-1][_x] == empty_square_reward){
-             cardinals[2] = 1 + (recurse.val)*(1.0/(_depth*_depth));
-           } else {
-             cardinals[2] = PacMap[_y-1][_x] + (recurse.val)*(1.0/(_depth*_depth));
-           }
-           //PacMap[_y-1][_x] = -10;
-           memo[_y-1][_x] = 0;
-       }
-       // BOTTOM - grid[v.y+1][v.x]
-      if( (PacMap[_y+1][_x] == pellet_reward || PacMap[_y+1][_x] == ghost_penalty || PacMap[_y+1][_x] == empty_square_reward) && memo[_y+1][_x] == 0 ){
-           memo[_y+1][_x] = 1; // Mark as traveled.
-           _depth = _depth + 1;
-           ValueAndDirection recurse = new ValueAndDirection(0, 0);
-           recurse = pick_direction(_x, _y+1, PacMap[_y+1][_x], _depth);
-           if(PacMap[_y+1][_x] == empty_square_reward){
-             cardinals[3] = 1 + (recurse.val)*(1.0/(_depth*_depth));
-           } else {
-             cardinals[3] = PacMap[_y+1][_x] + (recurse.val)*(1.0/(_depth*_depth));
-           }
-           //PacMap[_y-1][_x] = -10;
-           memo[_y+1][_x] = 0;
-       }
-     }
+    // Need to try all 4 directions 
+    // Need to return best value and direction pair.    
+    int num_directions = 4;
+    float[] cardinals = {wall_penalty, wall_penalty, wall_penalty, wall_penalty};
+    // LEFT - grid[v.y][v.x-1]
+    int[] x_mods = {-1, 1, 0, 0};
+    int[] y_mods = {0, 0, -1, 1};
+    //if(_depth < 5){
+      for(int i = 0; i < num_directions; i++){
+        if( (PacMap[_y + y_mods[i]][_x + x_mods[i]] == pellet_reward || PacMap[_y + y_mods[i]][_x + x_mods[i]] == ghost_penalty || PacMap[_y + y_mods[i]][_x + x_mods[i]] == empty_square_reward) && memo[_y + y_mods[i]][_x + x_mods[i]] == 0 ){
+          // Mark as seen   
+          memo[_y + y_mods[i]][_x + x_mods[i]] = 1;
+          _depth = _depth + 1;
+          ValueAndDirection recurse = new ValueAndDirection(0, 0);
+          recurse = pick_direction(_x + x_mods[i], _y + y_mods[i], PacMap[_y + y_mods[i]][_x + x_mods[i]], _depth);
+          if(PacMap[_y+y_mods[i]][_x+x_mods[i]] == empty_square_reward){
+            cardinals[i] = 1 + (recurse.val)*(1.0/(_depth*_depth));
+          } else {
+            cardinals[i] = PacMap[_y + y_mods[i]][_x + x_mods[i]] + (recurse.val)*(1.0/(_depth*_depth));
+          }
+          // Unmark spot
+          memo[_y + y_mods[i]][_x + x_mods[i]] = 0;
+        }
+      }
+    //}
      
-     //print(cardinals[0], cardinals[1], _depth, "\n");
-     
-     float max = cardinals[0]; 
-     int dir = 0;
-     for(int i = 1; i < 4; i++){
-       if(cardinals[i] > max){
-         max = cardinals[i];
-         dir = i;  
-       }
-     }
-     ValueAndDirection ret = new ValueAndDirection(max, dir);
- 
-     return ret;
-     // RIGHT - grid[v.y][v.x+1]
-     
-     // TOP - grid[v.y-1][v.x]
-     
-     // BOTTOM - grid[v.y+1][v.x]
-     
-     
-     // Map for values - PacMap 
-     // ValueAndDirection ret = new ValueAndDirection(0, 0);
-     // 0 - LEFT, 1 - RIGHT, 2 - UP, 3 - Down  
+    float max = cardinals[last_direction]; 
+    int dir = last_direction;
+    for(int i = 1; i < 4; i++){
+      if(cardinals[i] > max){
+        max = cardinals[i];
+        dir = i;  
+      }
+    }
+    ValueAndDirection ret = new ValueAndDirection(max, dir);
+    return ret;
   }
   
   void BFS_p_n_g(int [][] grid, int _x, int _y, Ghost g){
+    int num_directions = 4;
+
     boolean death = false;
     Queue pac_q = new Queue();
     Queue ghost_one_q = new Queue();
@@ -227,194 +178,67 @@ class PacMan {
     
     pac_q.push(c);
     ghost_one_q.push(g_c);
-    grid[g_c.y][g_c.x] = ghost_penalty;
-    // Label v as discovered 
-    //grid[y][x] = ;
+    grid[g_c.y][g_c.x] = death_penalty;
     int levels = 0;
-    while(!pac_q.empty() && !ghost_one_q.empty() && levels < 4*6 && !death){
+    
+    
+    while(!pac_q.empty() && !ghost_one_q.empty() && (levels < bfs_pacman_foresight + score) && !death){
       levels = levels + 1;
 
       Coords v = pac_q.pop();
-      Coords gv = ghost_one_q.pop();
-      // Right 
       Coords n = new Coords(0, 0);
+      
+      int[] x_mods = {1, -1, 0, 0};
+      int[] y_mods = {0, 0, -1, 1};
+      
+      for(int i = 0; i < num_directions; i++){
+        switch(grid[v.y+y_mods[i]][v.x+x_mods[i]]){
+          case 0: 
+            n.y = v.y+y_mods[i];
+            n.x = v.x+x_mods[i];
+            pac_q.push(n);
+            grid[v.y+y_mods[i]][v.x+x_mods[i]] = empty_square_reward;
+            break;
+          case 1: 
+            break;
+          case 2:
+            n.y = v.y+y_mods[i];
+            n.x = v.x+x_mods[i];
+            pac_q.push(n);
+            grid[v.y+y_mods[i]][v.x+x_mods[i]] = pellet_reward;
+            break;
+          case -10:
+            //death = true;
+            break;
+        }     
+      }
+      
+      Coords gv = ghost_one_q.pop();
       Coords n2 = new Coords(0, 0);
-      
-      
-      switch(grid[v.y][v.x+1]){
-        case 0: 
-          n.y = v.y;
-          n.x = v.x+1;
-          pac_q.push(n);
-          grid[v.y][v.x+1] = empty_square_reward;
-          break;
-        case 1: 
-          break;
-        case 2:
-          n.y = v.y;
-          n.x = v.x+1;
-          pac_q.push(n);
-          grid[v.y][v.x+1] = pellet_reward;
-          break;
-        case -10:
-          death = true;
-          break;
-          
-      }
-      // Left
-      switch(grid[v.y][v.x-1]){
-        case 0: 
-          n.y = v.y;
-          n.x = v.x-1;
-          pac_q.push(n);
-          grid[v.y][v.x-1] = empty_square_reward;
-          break;
-        case 1: 
-          break;
-        case 2:
-          n.y = v.y;
-          n.x = v.x-1;
-          pac_q.push(n);
-          grid[v.y][v.x-1] = pellet_reward;
-          break;
-        case -10:
-          death = true;
-          break;
-      }
-      // Top
-      switch(grid[v.y-1][v.x]){
-        case 0: 
-          n.y = v.y-1;
-          n.x = v.x;
-          pac_q.push(n);
-          grid[v.y-1][v.x] = empty_square_reward;
-          break;
-        case 1: 
-          break;
-        case 2:
-          n.y = v.y-1;
-          n.x = v.x;
-          pac_q.push(n);
-          grid[v.y-1][v.x] = pellet_reward;
-          break;
-        case -10:
-          death = true;
-          break;
-      }
-      // Bottom
-      switch(grid[v.y+1][v.x]){
-        case 0: 
-          n.y = v.y+1;
-          n.x = v.x;
-          pac_q.push(n);
-          grid[v.y+1][v.x] = empty_square_reward;
-          break;
-        case 1: 
-          break;
-        case 2:
-          n.y = v.y+1;
-          n.x = v.x;
-          pac_q.push(n);
-          grid[v.y+1][v.x] = pellet_reward;
-          break;
-        case -10:
-          death = true;
-          break;
-      }
-      
-      
-      if(levels < 4*4){
-        // Top 
-        switch(grid[gv.y][gv.x+1]){
-          case 0: 
-            n.y = gv.y;
-            n.x = gv.x+1;
-            ghost_one_q.push(n);
-            grid[gv.y][gv.x+1] = ghost_penalty;
-            break;
-          case 1: 
-            break;
-          case 2:
-            n.y = gv.y;
-            n.x = gv.x+1;
-            ghost_one_q.push(n);
-            grid[gv.y][gv.x+1] = ghost_penalty;
-            break;
-          case -30: 
-            n.y = gv.y;
-            n.x = gv.x+1;
-            ghost_one_q.push(n);
-            grid[gv.y][gv.x+1] = ghost_penalty;
-            break;
-        }
-        // Left
-        switch(grid[gv.y][gv.x-1]){
-          case 0: 
-            n.y = gv.y;
-            n.x = gv.x-1;
-            ghost_one_q.push(n);
-            grid[gv.y][gv.x-1] = ghost_penalty;
-            break;
-          case 1: 
-            break;
-          case 2:
-            n.y = gv.y;
-            n.x = gv.x-1;
-            ghost_one_q.push(n);
-            grid[gv.y][gv.x-1] = ghost_penalty;
-            break;
-          case -30: 
-            n.y = gv.y;
-            n.x = gv.x-1;
-            ghost_one_q.push(n);
-            grid[gv.y][gv.x-1] = ghost_penalty;
-            break;
-        }
-        // Top
-        switch(grid[gv.y-1][gv.x]){
-          case 0: 
-            n.y = gv.y-1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y-1][gv.x] = ghost_penalty;
-            break;
-          case 1: 
-            break;
-          case 2:
-            n.y = gv.y-1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y-1][gv.x] = ghost_penalty;
-            break;
-          case -30: 
-            n.y = gv.y-1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y-1][gv.x] = ghost_penalty;
-            break;
-        }
-        // Bottom
-        switch(grid[gv.y+1][gv.x]){
-          case 0: 
-            n.y = gv.y+1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y+1][gv.x] = ghost_penalty;
-            break;
-          case 1: 
-            break;
-          case 2:
-            n.y = gv.y+1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y+1][gv.x] = ghost_penalty;
-            break;
-          case -30: 
-            n.y = gv.y+1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y+1][gv.x] = ghost_penalty;
-            break;
+      if(levels < bfs_ghost_foresight){
+        for(int i = 0; i < num_directions; i++){
+          switch(grid[gv.y+y_mods[i]][gv.x+x_mods[i]]){
+            case 0: 
+              n2.y = gv.y+y_mods[i];
+              n2.x = gv.x+x_mods[i];
+              ghost_one_q.push(n2);
+              grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
+              break;
+            case 1: 
+              break;
+            case 2:
+              n2.y = gv.y+y_mods[i];
+              n2.x = gv.x+x_mods[i];
+              ghost_one_q.push(n2);
+              grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
+              break;
+            case -30: 
+              n2.y = gv.y+y_mods[i];
+              n2.x = gv.x+x_mods[i];
+              ghost_one_q.push(n2);
+              grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
+              break;
+          }
         }
       }
     }
@@ -422,203 +246,48 @@ class PacMan {
   }
   
   void BFS_ghost(int [][] grid, Ghost g){
+    int num_directions = 4;
     boolean death = false;
     Queue ghost_one_q = new Queue();
     Coords g_c = new Coords(g.x,g.y);
     ghost_one_q.push(g_c);
-    grid[g_c.y][g_c.x] = ghost_penalty;
+    grid[g_c.y][g_c.x] = death_penalty;
+    //grid[g_c.y][g_c.x] = ghost_penalty;
     int levels = 0;
-    while(!ghost_one_q.empty() && levels < 4*4 && !death){
+    int[] x_mods = {1, -1, 0, 0};
+    int[] y_mods = {0, 0, -1, 1};
+    while(!ghost_one_q.empty() && levels < bfs_ghost_foresight && !death){
       levels = levels + 1;
       Coords gv = ghost_one_q.pop();
       Coords n = new Coords(0, 0);      
       
-      if(levels < 4*4){
-        // Top 
-        switch(grid[gv.y][gv.x+1]){
+      for(int i = 0; i < num_directions; i++){
+        switch(grid[gv.y+y_mods[i]][gv.x+x_mods[i]]){
           case 0: 
-            n.y = gv.y;
-            n.x = gv.x+1;
+            n.y = gv.y+y_mods[i];
+            n.x = gv.x+x_mods[i];
             ghost_one_q.push(n);
-            grid[gv.y][gv.x+1] = ghost_penalty;
+            grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
             break;
           case 1: 
             break;
           case 2:
-            n.y = gv.y;
-            n.x = gv.x+1;
+            n.y = gv.y+y_mods[i];
+            n.x = gv.x+x_mods[i];
             ghost_one_q.push(n);
-            grid[gv.y][gv.x+1] = ghost_penalty;
+            grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
             break;
           case -30: 
-            n.y = gv.y;
-            n.x = gv.x+1;
+            n.y = gv.y+y_mods[i];
+            n.x = gv.x+x_mods[i];
             ghost_one_q.push(n);
-            grid[gv.y][gv.x+1] = ghost_penalty;
-            break;
-        }
-        // Left
-        switch(grid[gv.y][gv.x-1]){
-          case 0: 
-            n.y = gv.y;
-            n.x = gv.x-1;
-            ghost_one_q.push(n);
-            grid[gv.y][gv.x-1] = ghost_penalty;
-            break;
-          case 1: 
-            break;
-          case 2:
-            n.y = gv.y;
-            n.x = gv.x-1;
-            ghost_one_q.push(n);
-            grid[gv.y][gv.x-1] = ghost_penalty;
-            break;
-          case -30: 
-            n.y = gv.y;
-            n.x = gv.x-1;
-            ghost_one_q.push(n);
-            grid[gv.y][gv.x-1] = ghost_penalty;
-            break;
-        }
-        // Top
-        switch(grid[gv.y-1][gv.x]){
-          case 0: 
-            n.y = gv.y-1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y-1][gv.x] = ghost_penalty;
-            break;
-          case 1: 
-            break;
-          case 2:
-            n.y = gv.y-1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y-1][gv.x] = ghost_penalty;
-            break;
-          case -30: 
-            n.y = gv.y-1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y-1][gv.x] = ghost_penalty;
-            break;
-        }
-        // Bottom
-        switch(grid[gv.y+1][gv.x]){
-          case 0: 
-            n.y = gv.y+1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y+1][gv.x] = ghost_penalty;
-            break;
-          case 1: 
-            break;
-          case 2:
-            n.y = gv.y+1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y+1][gv.x] = ghost_penalty;
-            break;
-          case -30: 
-            n.y = gv.y+1;
-            n.x = gv.x;
-            ghost_one_q.push(n);
-            grid[gv.y+1][gv.x] = ghost_penalty;
+            grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
             break;
         }
       }
     }
     
   }
-  /*
-  void BFS_pacman(int [][] grid, int _x, int _y){
-    Queue q = new Queue();
-    Coords c = new Coords(_x, _y);
-    q.push(c);
-    // Label v as discovered 
-    //grid[y][x] = ;
-    int levels = 0;
-    while(!q.empty() && levels < 5){
-      Coords v = q.pop();
-      // Right 
-      print(v.x, v.y, "\n");
-      Coords n = new Coords(0, 0);
-      switch(grid[v.y][v.x+1]){
-        case 0: 
-          n.y = v.y;
-          n.x = v.x+1;
-          q.push(n);
-          grid[v.y][v.x+1] = 0;
-          break;
-        case 1: 
-          break;
-        case 2:
-          n.y = v.y;
-          n.x = v.x+1;
-          q.push(n);
-          grid[v.y][v.x+1] = 3;
-          break;
-          
-      }
-      // Left
-      switch(grid[v.y][v.x-1]){
-        case 0: 
-          n.y = v.y;
-          n.x = v.x-1;
-          q.push(n);
-          grid[v.y][v.x-1] = 0;
-          break;
-        case 1: 
-          break;
-        case 2:
-          n.y = v.y;
-          n.x = v.x-1;
-          q.push(n);
-          grid[v.y][v.x-1] = 3;
-          break;
-      }
-      // Top
-      switch(grid[v.y-1][v.x]){
-        case 0: 
-          n.y = v.y-1;
-          n.x = v.x;
-          q.push(n);
-          grid[v.y-1][v.x] = 0;
-          break;
-        case 1: 
-          break;
-        case 2:
-          n.y = v.y-1;
-          n.x = v.x;
-          q.push(n);
-          grid[v.y-1][v.x] = 3;
-          break;
-      }
-      // Bottom
-      switch(grid[v.y+1][v.x]){
-        case 0: 
-          n.y = v.y+1;
-          n.x = v.x;
-          q.push(n);
-          grid[v.y+1][v.x] = 0;
-          break;
-        case 1: 
-          break;
-        case 2:
-          n.y = v.y+1;
-          n.x = v.x;
-          q.push(n);
-          grid[v.y+1][v.x] = 3;
-          break;
-      }
-      
-      
-      levels = levels + 1;
-    }
-    
-  }
-
-  */
   
   void display_pacmap() {
     // Render the level
@@ -630,11 +299,10 @@ class PacMan {
     for (int i = 0; i < map.ny; i++) {
       for (int j = 0; j < map.nx; j++) {
         //print(i, j);
-
         switch(PacMap[j][i]) {
         case 1: 
           fill(100, 150, 250);
-          rect(offset_x + i*w, offset_y + j*w, w, w); 
+          rect(offset_x + i*w, offset_y + j*w, w-1, w-1); 
           break;
         case 2: 
           fill(255, 255, 0);
@@ -648,6 +316,10 @@ class PacMan {
           fill(0, 255, 0);
           ellipse(offset_x + i*w+(w/2), offset_y + j*w+(w/2), w/2, w/2);
           break;   
+        case -1000:
+          fill(255, 255, 255);
+          ellipse(offset_x + i*w+(w/2), offset_y + j*w+(w/2), w/2, w/2);
+          break; 
         }
       }
     }
@@ -741,7 +413,7 @@ class PacMan {
           prey = 1;  
     }
  }
-    if(frameCount%25==0){
+    if(frameCount % 25 == 0){
       move(prex,prey);
     }
 }
@@ -788,48 +460,11 @@ class PacMan {
     fill(255, 255, 0);
     text("PacMan x: " + x, 0, 830);
     text("PacMan y: " + y, 0, 860);
-    //    int x_dir = 0;
-    //    int y_dir = 0;
-    //    if (moving_one_block) {
-    //      switch(movement_direction) {
-    //      case 0: // UP
-    //        transition_y = transition_y - 1;
-    //        y_dir = -1;
-    //        break;
-    //      case 1: // DOWN
-    //        transition_y = transition_y + 1;
-    //        y_dir = 1;
-    //        break;
-    //      case 2: // LEFT
-    //        transition_x = transition_x + -1;
-    //        x_dir = -1;
-    //        break;
-    //      case 3: // RIGHT
-    //        transition_x = transition_x +  1;
-    //        x_dir = 1;
-    //        break;
-    //      default: 
-    //        break;
-    //      }
-    //      if( map.level_one[y + 2*y_dir][x + ] == 1 ){
-    //        moving_one_block = false;
-    //      }
-    //    }
-    //    if (moving_one_block == false) {
-    //      x = x+ (transition_x/25);
-    //      y = y+ (transition_y/25);
-    //      transition_x = 0;
-    //      transition_y = 0;
-    //      movement_direction = -1;
-    //    }
     ellipse(x*w+(w/2) + transition_x, y*w+(w/2) + transition_y, r, r);
   }
 
 
   void reset() {
-    //for (Ghost g : ghosts) {
-      //print("Pacman's location: ", x, y, " Ghost's location: ", g.x, g.y);
-    //}
     x = reset_x;
     y = reset_y;
     int[][] level_zero_reset = {
@@ -845,8 +480,6 @@ class PacMan {
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
              };
     map.level_one = level_zero_reset;
-
-    
     alive = false;
   }
   

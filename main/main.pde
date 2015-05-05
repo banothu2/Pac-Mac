@@ -30,7 +30,7 @@ int game_mode = -1;
 */
 
 // General game variables
-int w = 50;                           // Width of all elements in game
+int w = 25;                           // Width of all elements in game
 int game_width = 1400;
 int game_height = 900;
 int pacman_start_x = 9;
@@ -80,8 +80,7 @@ void draw(){
       QAgent.step();
       break;
     case 1: 
-      step_game();
-      pacman.find_path();
+      human_model_step();
       break;
     case 2: 
       //pacman.solve();
@@ -89,7 +88,7 @@ void draw(){
     default: 
       game_mode = -1;
       break;
-      
+  }
   /*
   int i=0;
   for(Ghost g: ghosts){
@@ -109,16 +108,11 @@ void nextTrial(){
   pacman.reset();
 }
 
-void next_move(){
-    pacman.find_path();
-    step_game();  
-}
-
-void step_game(){
+void human_model_step(){
   for(Ghost g: ghosts){  
     g.attack();
   }  
-  //move_randomly();
+  pacman.find_path();
 }
 
 void move_randomly(){
@@ -154,14 +148,8 @@ void keyPressed() {
     paused = !paused;
   } else if (key == 'r') {
     random_move = !random_move;
-<<<<<<< HEAD
-=======
   } else if (key == 's') {
-    step_game();
-  } else if(key== 'v'){
-     vector_model=true;
-     human_model=false;
->>>>>>> origin/master
+    human_model_step();
   } else if (key == 'l') {
     pacman.x = QAgent.ix;
     pacman.y = QAgent.iy;
