@@ -20,8 +20,6 @@ ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
 boolean random_move = false;
 
-boolean random_move_ghost=false;
-
 int game_mode = -1;
 /*
   Game mode values: 
@@ -32,7 +30,7 @@ int game_mode = -1;
 */
 
 // General game variables
-int w = 50;                           // Width of all elements in game
+int w = 25;                           // Width of all elements in game
 int game_width = 1400;
 int game_height = 900;
 int pacman_start_x = 9;
@@ -42,7 +40,6 @@ int pacman_start_y = 8;
 int ntrials;
 float last_trial_reward;
 boolean showQ = false;
-
 
 void setup(){
   map = new Map(w);
@@ -57,8 +54,8 @@ void setup(){
 }
 
 void setup_bots(){
-  int[] ghost_xs = {1, 6, 12};
-  int[] ghost_ys = {1, 1, 1};
+  int[] ghost_xs = {1, 1, 12};
+  int[] ghost_ys = {1, 8, 1};
   for(int i = 0; i < NGHOSTS; i++){
     Ghost g = new Ghost(i, ghost_xs[i], ghost_ys[i], 20, w);
     ghosts.add(g);
@@ -82,12 +79,10 @@ void draw(){
       QAgent.step();
       break;
     case 1: 
-      step_game();
-      pacman.find_path();
+      human_model_step();
       break;
     case 2: 
-      step_game();
-      pacman.solve();
+      //pacman.solve();
       break;
     default: 
       game_mode = -1;
@@ -112,16 +107,11 @@ void nextTrial(){
   pacman.reset();
 }
 
-void next_move(){
-    pacman.find_path();
-    step_game();  
-}
-
-void step_game(){
+void human_model_step(){
   for(Ghost g: ghosts){  
     g.attack();
   }  
-  //move_randomly();
+  pacman.find_path();
 }
 
 void move_randomly(){
@@ -158,7 +148,7 @@ void keyPressed() {
   } else if (key == 'r') {
     random_move = !random_move;
   } else if (key == 's') {
-    step_game();
+    human_model_step();
   } else if (key == 'l') {
     pacman.x = QAgent.ix;
     pacman.y = QAgent.iy;
