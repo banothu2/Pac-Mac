@@ -717,7 +717,7 @@ class PacMan {
     alb = value_left[(int)nearestx][(int)nearesty];
     alc = value_down[(int)nearestx][(int)nearesty];
     ald = value_up[(int)nearestx][(int)nearesty];
-    if(ala>=0||alb>=10||alc>=10||ald>=10){
+    if(ala>=10||alb>=10||alc>=10||ald>=10){
     if(ala >= alb && ala >= alc && ala >= ald){
        bestx=1;
        besty=0;
@@ -745,7 +745,7 @@ class PacMan {
     else{prex=(int)random(1);prey=(int)random(1)-prex;}
     constrain(prex,0,1);}
     
-     else if(difference.mag()<4){
+     else if(difference.mag()<10){
        if (abs(Pacman_target.x) > abs(Pacman_target.y)){
          if (Pacman_target.x >= 0 && check_left()){
            prex = -1;
