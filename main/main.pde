@@ -73,7 +73,7 @@ void draw(){
   for(Ghost g: ghosts){  
     g.display();
   }  
-  
+  if(frameCount%1000==0){random_move_ghost= !random_move_ghost;}
   // Toggles between the various PacMan Playing models 
   switch(game_mode){
     case -1:

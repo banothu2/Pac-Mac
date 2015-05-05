@@ -12,7 +12,7 @@ class PacMan {
   int[][] PacMap;
   int reset_x; 
   int reset_y;
-  PVector Pacman_target, difference,pacman_location,ghost_location;
+  PVector Pacman_target, difference, pacman_location, ghost_location, total_difference;
   int prex, prey;
   Ghost temp;
   int pellets_right, pellets_left, pellets_up, pellets_down;
@@ -660,8 +660,11 @@ class PacMan {
     pellets_left=0;
     pellets_up=0;
     pellets_down=0;
+    pacman_location = new PVector(x,y);
     ArrayList<PVector> gpositions = new ArrayList<PVector>(NGHOSTS);
+    ArrayList<PVector> differences = new ArrayList<PVector>(NGHOSTS);
     int counter_gpositions=0;
+    total_difference = new PVector(0,0);
     for(Ghost g: ghosts){  
         gpositions.add(new PVector(g.x,g.y));
     }
@@ -689,12 +692,19 @@ class PacMan {
          }
        }
     }
-
-     pacman_location = new PVector(x,y);
-     ghost_location = gpositions.get(0);
-     difference = PVector.sub(pacman_location, ghost_location);
-     Pacman_target= new PVector(-difference.x,-difference.y);
-     if(difference.mag()<10){
+    
+    
+    
+    for(int i=0;i<NGHOSTS;i++){
+      difference = PVector.sub(pacman_location, gpositions.get(0));
+      differences.add(new PVector(difference.x,difference.y));
+      total_difference.add(differences.get(i));
+    }
+    
+     
+     Pacman_target= new PVector(-total_difference.x,-total_difference.y);
+     
+     /*if(difference.mag()<4){
        if (abs(Pacman_target.x) > abs(Pacman_target.y)){
          if (Pacman_target.x >= 0 && check_left()){
            prex = -1;
@@ -748,19 +758,19 @@ class PacMan {
           prex = 1; 
           prey = 0;  
     }
-    else if(pellets_left>=pellets_right&&pellets_left>=pellets_down&&pellets_left>=pellets_up){
+    else if(pellets_left >= pellets_right && pellets_left >= pellets_down && pellets_left >= pellets_up){
           prex = -1; 
           prey = 0;  
     }
-    else if(pellets_up>=pellets_left && pellets_up>=pellets_down && pellets_up>=pellets_right){
+    else if(pellets_up >= pellets_left && pellets_up >= pellets_down && pellets_up>=pellets_right){
           prex = 0; 
           prey = -1;  
     }
-    else if(pellets_down>=pellets_left&&pellets_down>=pellets_right&&pellets_down>=pellets_up){
+    else if(pellets_down >= pellets_left && pellets_down >= pellets_right && pellets_down >= pellets_up){
           prex = 0; 
           prey = 1;  
     }
- }
+ }*/
     if(frameCount%25==0){
       move(prex,prey);
     }
