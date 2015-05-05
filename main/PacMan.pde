@@ -795,19 +795,19 @@ class PacMan {
         }
       }
  else{
-    if(pellets_right >= pellets_left && pellets_right >= pellets_down && pellets_right>=pellets_up){
+    if(pellets_right >= pellets_left && pellets_right >= pellets_down && pellets_right>=pellets_up&&check_right()){
           prex = 1; 
           prey = 0;  
     }
-    else if(pellets_left >= pellets_right && pellets_left >= pellets_down && pellets_left >= pellets_up){
+    else if(pellets_left >= pellets_right && pellets_left >= pellets_down && pellets_left >= pellets_up&&check_left()){
           prex = -1; 
           prey = 0;  
     }
-    else if(pellets_up >= pellets_left && pellets_up >= pellets_down && pellets_up>=pellets_right){
+    else if(pellets_up >= pellets_left && pellets_up >= pellets_down && pellets_up>=pellets_right&&check_up()){
           prex = 0; 
           prey = -1;  
     }
-    else if(pellets_down >= pellets_left && pellets_down >= pellets_right && pellets_down >= pellets_up){
+    else if(pellets_down >= pellets_left && pellets_down >= pellets_right && pellets_down >= pellets_up&&check_down()){
           prex = 0; 
           prey = 1;  
     }
