@@ -17,14 +17,11 @@ QLearning QAgent;
 int NGHOSTS = 2;
 int NTEST = 0;
 ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
-<<<<<<< HEAD
 int deaths[] = {0,0,0};
-=======
 float[][] value_right;
 float[][] value_left;
 float[][] value_up;
 float[][] value_down;
->>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
 
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
 boolean random_move = false;
@@ -49,11 +46,8 @@ int pacman_start_x = 9;
 int pacman_start_y = 8;
 
 // Variables for Qlearning model 
-<<<<<<< HEAD
 int nRLTrials = 0;
-=======
-int ntrials=0;;
->>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
+int ntrials=0;
 float last_trial_reward;
 boolean showQ = false;
 int oldX, oldY;
@@ -207,14 +201,10 @@ void keyPressed() {
     random_move = !random_move;
   } else if (key == 's') {
     step_game();
-<<<<<<< HEAD
   } else if (key == 'l' && game_mode != 0) {
     map.level_one = map.level_zero_copy_RL;
     oldX = pacman.x;
     oldY = pacman.y;
-=======
-  } else if (key == 'l') {
->>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
     pacman.x = QAgent.ix;
     pacman.y = QAgent.iy;
     game_mode = 0;

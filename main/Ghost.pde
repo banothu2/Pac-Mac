@@ -89,52 +89,8 @@ class Ghost {
     ghost_location  = new PVector(x,y);
     ghost_target    = new PVector(0,0);
     difference      = new PVector(0,0);
-<<<<<<< HEAD
-    
-    difference      = PVector.sub(ghost_location, pacman_location);
-    
-    if(type == 1 && map.intersections[x][y] == 3 || map.intersections[x][y] == 0){
-      ghost_target = difference;
-      ghost_target.normalize();
-      if (abs(ghost_target.x) > abs(ghost_target.y)){
-        if (ghost_target.x<0 && map.intersections[x+1][y]!=1 ){
-          prex=1;prey=0;
-        } else if ( ghost_target.x>0 && map.intersections[x-1][y]!=1 ){
-          prex=-1; prey=0;
-        } else if ( map.intersections[x+1][y]!=1 ){
-          prex=1;prey=0;
-        } else {
-          prex=1;prey=0;
-        }
-      }
-      else{
-        if (ghost_target.y>0 && map.intersections[x][y-1]!=1){
-          prex=0;
-          prey=-1;
-        } else if (ghost_target.y<0 && map.intersections[x][y+1]!=1){
-          prex=0;
-          prey=1;
-        } else if (map.intersections[x][y-1]!=1){
-          prex=0;
-          prey=-1;
-        } else {
-          prex=0;
-          prey=1;
-        }
-      }
-    }
-    move(prex,prey);  
-  }*/
-  
-  void blinky(){
-    pacman_location = new PVector(pacman.x,pacman.y);
-    ghost_location  = new PVector(x,y);
-    ghost_target    = new PVector(0,0);
-    difference      = new PVector(0,0);
-    if(pacman_location.equals(ghost_location)){
-=======
+
     if(pacman_location.equals(ghost_location) && targetted_attack){
->>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
       pacman.reset();
     }
     // Gets the vector that points from Ghost to Pacman
@@ -274,31 +230,6 @@ class Ghost {
   
         //move(facing_x, facing_y);
       }
-<<<<<<< HEAD
-      // 
-      if(frameCount%25==1){
-        move(prex,prey);
-      }
-      text("Pinky Direction: ", 225,800);
-      if(prex==1){
-        text("right",325,800);
-      }
-      if(prex==-1){
-        text("left",325,800);
-      }
-      if(prey==1){
-        text("down",325,800);
-      }
-      if(prey==-1){
-        text("up",325,800);
-      }
-      
-        facing_x = prex + int(ghost_location.x);
-        facing_y = prey + int(ghost_location.y);
-=======
-    } else {
-      //move(facing_x, facing_y);
-    }
     
     if(frameCount%25==1){
       move(prex,prey);
@@ -319,7 +250,6 @@ class Ghost {
     
     facing_x = prex + int(ghost_location.x);
     facing_y = prey + int(ghost_location.y);
->>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
   }
   
   void pinky(){

@@ -10,17 +10,11 @@ class PacMan {
   int transition_y = 0;
   boolean alive, resetPM;
   int[][] PacMap;
-<<<<<<< HEAD
-  int reset_x, reset_y;
-  PVector Pacman_target, difference,pacman_location,ghost_location;
-  int prex, prey;
-=======
   int reset_x; 
   int reset_y;
   float ala,alb,alc,ald;
   PVector Pacman_target, difference, pacman_location, ghost_location, total_difference;
   int prex, prey,bestx,besty;
->>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
   Ghost temp;
   int pellets_right, pellets_left, pellets_up, pellets_down;
 
@@ -937,7 +931,6 @@ class PacMan {
            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
              };
-<<<<<<< HEAD
     x = reset_x;
     y = reset_y;
     resetPM = true;
@@ -947,13 +940,8 @@ class PacMan {
       map.level_one = level_zero_reset;
       score = 0;
     }
-=======
     map.level_one = level_zero_reset;
-
-    
-    alive = false;
     ntrials++;
->>>>>>> 1bdac0f380ded7355ca3af839e29961193731b28
   }
   
 
