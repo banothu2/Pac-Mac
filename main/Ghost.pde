@@ -6,9 +6,8 @@ class Ghost {
   int type;                 // Red = 0, Pink = 1, Blue = 2, Green = 3
   int prex, prey, prexi, preyi, oprex, oprey, checker; //used so ghost follows a command till it reaches intersection
   int padding; 
-  
-  int facing_x; 
-  int facing_y;
+  int facing_x, facing_y;
+  int startX, startY;
   
   int x_corner = 1;
   int y_corner = 1;
@@ -19,6 +18,8 @@ class Ghost {
   Ghost(int _type, int _x, int _y, int _r, int _w){
     x = _x;
     y = _y;
+    startX = _x;
+    startY = _y;
     r = _r;
     w = _w;
     type = _type;
@@ -26,6 +27,11 @@ class Ghost {
   
   void update(int _x, int _y){
     move(_x, _y);
+  }
+  
+  void reset(){
+    x = startX;
+    y = startY;
   }
   
   void attack(){
@@ -85,7 +91,8 @@ class Ghost {
     ghost_location  = new PVector(x,y);
     ghost_target    = new PVector(0,0);
     difference      = new PVector(0,0);
-    if(pacman_location.equals(ghost_location)){
+
+    if(pacman_location.equals(ghost_location) && targetted_attack){
       pacman.reset();
     }
     // Gets the vector that points from Ghost to Pacman
@@ -199,32 +206,32 @@ class Ghost {
       print("PACMAN AND RANDOM AT SAME LOCATION");
     }
    
-   boolean picked_direction = false;
-    if(map.intersections[y][x] == 3){
-      while(!picked_direction){
-        int random_direction = int(random(-0.5, 3.5));
-          if (random_direction == 0) {
-            prex = 0;
-            prey = -1;
-            picked_direction = check_up();
-          } else if (random_direction == 1) {
-            prex = 0;
-            prey = 1;
-            picked_direction = check_down();
-          } else if (random_direction == 2) {
-            prex = -1;
-            prey = 0;
-            picked_direction = check_left();
-          } else if (random_direction == 3) {
-            prex = 1;
-            prey = 0;
-            picked_direction = check_right();
-          } 
+     boolean picked_direction = false;
+      if(map.intersections[y][x] == 3){
+        while(!picked_direction){
+          int random_direction = int(random(-0.5, 3.5));
+            if (random_direction == 0) {
+              prex = 0;
+              prey = -1;
+              picked_direction = check_up();
+            } else if (random_direction == 1) {
+              prex = 0;
+              prey = 1;
+              picked_direction = check_down();
+            } else if (random_direction == 2) {
+              prex = -1;
+              prey = 0;
+              picked_direction = check_left();
+            } else if (random_direction == 3) {
+              prex = 1;
+              prey = 0;
+              picked_direction = check_right();
+            } 
+        }
+      } else {
+  
+        //move(facing_x, facing_y);
       }
-    } else {
-
-      //move(facing_x, facing_y);
-    }
     
     if(frameCount%25==1){
       move(prex,prey);

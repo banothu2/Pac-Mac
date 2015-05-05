@@ -8,7 +8,7 @@ class PacMan {
   boolean moving_one_block = false;
   int transition_x = 0;
   int transition_y = 0;
-  boolean alive;
+  boolean alive, resetPM;
   int[][] PacMap;
   int reset_x; 
   int reset_y;
@@ -83,6 +83,7 @@ class PacMan {
     w = _w;
     score = -1;
     alive = true;
+    resetPM = false;
     consume();
     reset_x = _x;
     reset_y = _y;
@@ -117,7 +118,7 @@ class PacMan {
       }
       i++;
     } 
-    if(frameCount%25==0){
+    if(frameCount%10==0){
       memo[y][x] = 1;
       ValueAndDirection best_dir = new ValueAndDirection(0, 0);
       best_dir = pick_direction(x, y, 0, 0);
@@ -907,6 +908,8 @@ class PacMan {
     if (map.level_one[y][x] == 2) {
       map.level_one[y][x] = 0;
       score = score + 1;
+      if(score == map.npellets)
+        reset();
     }
   }
 
@@ -955,8 +958,7 @@ class PacMan {
     //for (Ghost g : ghosts) {
       //print("Pacman's location: ", x, y, " Ghost's location: ", g.x, g.y);
     //}
-    x = reset_x;
-    y = reset_y;
+    
     int[][] level_zero_reset = {
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -969,10 +971,16 @@ class PacMan {
            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
              };
+    x = reset_x;
+    y = reset_y;
+    resetPM = true;
+    if(score != map.npellets)
+      alive = false;
+    else{      
+      map.level_one = level_zero_reset;
+      score = 0;
+    }
     map.level_one = level_zero_reset;
-
-    
-    alive = false;
     ntrials++;
   }
  

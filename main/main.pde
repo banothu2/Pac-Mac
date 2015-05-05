@@ -15,7 +15,9 @@ Map map;
 PacMan pacman;
 QLearning QAgent;
 int NGHOSTS = 2;
+int NTEST = 0;
 ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
+int deaths[] = {0,0,0};
 float[][] value_right;
 float[][] value_left;
 float[][] value_up;
@@ -44,10 +46,11 @@ int pacman_start_x = 9;
 int pacman_start_y = 8;
 
 // Variables for Qlearning model 
-int ntrials=0;;
+int nRLTrials = 0;
+int ntrials=0;
 float last_trial_reward;
 boolean showQ = false;
-
+int oldX, oldY;
 
 void setup(){
   map = new Map(w);
@@ -87,8 +90,13 @@ void draw(){
   stroke(0);
   map.display();
   pacman.display(); 
-  for(Ghost g: ghosts){  
-    g.display();
+  for(Ghost g: ghosts){ 
+    if(game_mode == 0){
+      if(nRLTrials > NTEST)
+        g.display();
+    }
+    else
+      g.display();
   }  
   //if(frameCount%1000==0){random_move_ghost= !random_move_ghost;}
   // Toggles between the various PacMan Playing models 
@@ -96,6 +104,8 @@ void draw(){
     case -1:
       break;
     case 0: 
+      if(nRLTrials > NTEST)
+        step_game();
       QAgent.step();
       break;
     case 1: 
@@ -118,15 +128,19 @@ void draw(){
     i++;
   }
   */
-  text("Score: " + pacman.score, 25, 800);
-
   display_info();
 }
 
 void nextTrial(){
+  nRLTrials++;
+  if(pacman.alive != true)
+    deaths[game_mode]++;
   last_trial_reward = QAgent.summed_reward;
   QAgent.home();
   pacman.reset();
+  for(Ghost g: ghosts){  
+    g.reset();
+  }  
 }
 
 void next_move(){
@@ -153,10 +167,21 @@ void move_randomly(){
 
 void display_info(){
   text("Score: " + pacman.score, 0, 800);
-  if(game_mode == 0)
+  if(game_mode == 0){
     text("Reinforcement Learning Mode On", 0, 780);
+    if(nRLTrials > NTEST)
+      text("Ghosts ON", 250, 780);
+    else
+      text("Ghosts OFF", 250, 780);
+  }
   else
     text("Reinforcement Learning Mode Off", 0, 780);
+  if(game_mode != -1)
+    text("Deaths: " + deaths[game_mode], 350, 780);
+  text("l: switch to reinforcement learning mode", 600, 800);
+  text("h: switch to smart mode (avoid prey and get closest pellet", 600, 820);
+  text("v: switch to vector mode", 600, 840);
+  text("p: pause/run", 600, 860);
 }
 
 void keyPressed() {
@@ -176,13 +201,19 @@ void keyPressed() {
     random_move = !random_move;
   } else if (key == 's') {
     step_game();
-  } else if (key == 'l') {
+  } else if (key == 'l' && game_mode != 0) {
+    map.level_one = map.level_zero_copy_RL;
+    oldX = pacman.x;
+    oldY = pacman.y;
     pacman.x = QAgent.ix;
     pacman.y = QAgent.iy;
-    game_mode = 0; 
-  } else if (key == 'h') {
+    game_mode = 0;
+  } else if (key == 'h' & game_mode != 1) {
     game_mode = 1;
-  } else if (key == 'v') {
+    map.level_one = map.level_zero;
+    pacman.x = oldX;
+    pacman.y = oldY;
+  } else if (key == 'v' && game_mode != 2) {
     game_mode = 2;
   } else if (key == 'i') {
     game_mode = -1;
