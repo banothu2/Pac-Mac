@@ -8,10 +8,9 @@ class PacMan {
   boolean moving_one_block = false;
   int transition_x = 0;
   int transition_y = 0;
-  boolean alive;
+  boolean alive, resetPM;
   int[][] PacMap;
-  int reset_x; 
-  int reset_y;
+  int reset_x, reset_y;
   PVector Pacman_target, difference,pacman_location,ghost_location;
   int prex, prey;
   Ghost temp;
@@ -41,6 +40,7 @@ class PacMan {
     w = _w;
     score = -1;
     alive = true;
+    resetPM = false;
     consume();
     reset_x = _x;
     reset_y = _y;
@@ -781,6 +781,8 @@ class PacMan {
     if (map.level_one[y][x] == 2) {
       map.level_one[y][x] = 0;
       score = score + 1;
+      if(score == map.npellets)
+        reset();
     }
   }
 
@@ -830,9 +832,7 @@ class PacMan {
     //for (Ghost g : ghosts) {
       //print("Pacman's location: ", x, y, " Ghost's location: ", g.x, g.y);
     //}
-    alive = false;
-    x = reset_x;
-    y = reset_y;
+    
     int[][] level_zero_reset = {
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}, 
            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
@@ -845,10 +845,15 @@ class PacMan {
            {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1},
            {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
              };
-    //map.level_one = level_zero_reset;
-
-    
-    alive = false;
+    x = reset_x;
+    y = reset_y;
+    resetPM = true;
+    if(score != map.npellets)
+      alive = false;
+    else{      
+      map.level_one = level_zero_reset;
+      score = 0;
+    }
   }
   
 
