@@ -192,18 +192,16 @@ class PacMan {
       int[] y_mods = {0, 0, -1, 1};
       
       for(int i = 0; i < num_directions; i++){
+        n.y = v.y+y_mods[i];
+        n.x = v.x+x_mods[i];
         switch(grid[v.y+y_mods[i]][v.x+x_mods[i]]){
           case 0: 
-            n.y = v.y+y_mods[i];
-            n.x = v.x+x_mods[i];
             pac_q.push(n);
             grid[v.y+y_mods[i]][v.x+x_mods[i]] = empty_square_reward;
             break;
           case 1: 
             break;
           case 2:
-            n.y = v.y+y_mods[i];
-            n.x = v.x+x_mods[i];
             pac_q.push(n);
             grid[v.y+y_mods[i]][v.x+x_mods[i]] = pellet_reward;
             break;
@@ -217,24 +215,20 @@ class PacMan {
       Coords n2 = new Coords(0, 0);
       if(levels < bfs_ghost_foresight){
         for(int i = 0; i < num_directions; i++){
+          n2.y = gv.y+y_mods[i];
+          n2.x = gv.x+x_mods[i];
           switch(grid[gv.y+y_mods[i]][gv.x+x_mods[i]]){
             case 0: 
-              n2.y = gv.y+y_mods[i];
-              n2.x = gv.x+x_mods[i];
               ghost_one_q.push(n2);
               grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
               break;
             case 1: 
               break;
             case 2:
-              n2.y = gv.y+y_mods[i];
-              n2.x = gv.x+x_mods[i];
               ghost_one_q.push(n2);
               grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
               break;
             case -30: 
-              n2.y = gv.y+y_mods[i];
-              n2.x = gv.x+x_mods[i];
               ghost_one_q.push(n2);
               grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
               break;
@@ -262,27 +256,25 @@ class PacMan {
       Coords n = new Coords(0, 0);      
       
       for(int i = 0; i < num_directions; i++){
-        switch(grid[gv.y+y_mods[i]][gv.x+x_mods[i]]){
-          case 0: 
-            n.y = gv.y+y_mods[i];
-            n.x = gv.x+x_mods[i];
-            ghost_one_q.push(n);
-            grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
-            break;
-          case 1: 
-            break;
-          case 2:
-            n.y = gv.y+y_mods[i];
-            n.x = gv.x+x_mods[i];
-            ghost_one_q.push(n);
-            grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
-            break;
-          case -30: 
-            n.y = gv.y+y_mods[i];
-            n.x = gv.x+x_mods[i];
-            ghost_one_q.push(n);
-            grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
-            break;
+        n.y = gv.y+y_mods[i];
+        n.x = gv.x+x_mods[i];
+        if(!(n.y == pacman.y && n.x == pacman.x)){
+          switch(grid[gv.y+y_mods[i]][gv.x+x_mods[i]]){
+            case 0: 
+              ghost_one_q.push(n);
+              grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
+              break;
+            case 1: 
+              break;
+            case 2:
+              ghost_one_q.push(n);
+              grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
+              break;
+            case -30: 
+              ghost_one_q.push(n);
+              grid[gv.y+y_mods[i]][gv.x+x_mods[i]] = ghost_penalty;
+              break;
+          }
         }
       }
     }
@@ -302,7 +294,9 @@ class PacMan {
         switch(PacMap[j][i]) {
         case 1: 
           fill(100, 150, 250);
-          rect(offset_x + i*w, offset_y + j*w, w-1, w-1); 
+          stroke(0, 255, 0);
+          rect(offset_x + i*w, offset_y + j*w, w, w);
+          noStroke(); 
           break;
         case 2: 
           fill(255, 255, 0);

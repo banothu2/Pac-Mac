@@ -41,7 +41,6 @@ int ntrials;
 float last_trial_reward;
 boolean showQ = false;
 
-
 void setup(){
   map = new Map(w);
   pacman = new PacMan(pacman_start_x, pacman_start_y, w);
@@ -55,8 +54,8 @@ void setup(){
 }
 
 void setup_bots(){
-  int[] ghost_xs = {1, 6, 12};
-  int[] ghost_ys = {1, 1, 1};
+  int[] ghost_xs = {1, 1, 12};
+  int[] ghost_ys = {1, 8, 1};
   for(int i = 0; i < NGHOSTS; i++){
     Ghost g = new Ghost(i, ghost_xs[i], ghost_ys[i], 20, w);
     ghosts.add(g);
