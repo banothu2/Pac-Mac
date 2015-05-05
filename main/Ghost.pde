@@ -170,9 +170,13 @@ class Ghost {
     }
     // 
     if(frameCount%25==1){
-      move(prex,prey);
-
+      if(random_move_ghost==false){
+        move(prex,prey);
+      } else {
+        random_ghost();
+      }
     }
+
     text("Blinky Direction: ", 75, 800);
     if(prex==1){
       text("right",175,800);
