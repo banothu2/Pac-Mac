@@ -30,6 +30,7 @@ class Ghost {
   
   void attack(){
     if(frameCount%25 == 1){
+      /*
       if(frameCount % 250 == 1){
         targetted_attack = !targetted_attack;
           int x_rand = int(random(0, 2));
@@ -55,6 +56,7 @@ class Ghost {
               break;
           }
       }
+      */
     }
     switch(type){
       case 0: 
@@ -83,7 +85,7 @@ class Ghost {
     ghost_location  = new PVector(x,y);
     ghost_target    = new PVector(0,0);
     difference      = new PVector(0,0);
-    if(pacman_location.equals(ghost_location) && targetted_attack){
+    if(pacman_location.equals(ghost_location)){
       pacman.reset();
     }
     // Gets the vector that points from Ghost to Pacman
@@ -220,6 +222,7 @@ class Ghost {
           } 
       }
     } else {
+
       //move(facing_x, facing_y);
     }
     
