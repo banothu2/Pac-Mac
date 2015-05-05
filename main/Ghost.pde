@@ -6,20 +6,14 @@ class Ghost {
   int type;                 // Red = 0, Pink = 1, Blue = 2, Green = 3
   int prex, prey, prexi, preyi, oprex, oprey, checker; //used so ghost follows a command till it reaches intersection
   int padding; 
-  int facing_x, facing_y;
-  int startX, startY;
   
-  int x_corner = 1;
-  int y_corner = 1;
-  
-  boolean targetted_attack = true;
+  int facing_x; 
+  int facing_y;
   
   PVector pacman_location, blinky_location, ghost_location, ghost_target, difference1, difference2, difference;
   Ghost(int _type, int _x, int _y, int _r, int _w){
     x = _x;
     y = _y;
-    startX = _x;
-    startY = _y;
     r = _r;
     w = _w;
     type = _type;
@@ -29,52 +23,10 @@ class Ghost {
     move(_x, _y);
   }
   
-  void reset(){
-    x = startX;
-    y = startY;
-  }
-  
   void attack(){
-    if(frameCount%25 == 1){
-      /*
-      if(frameCount % 250 == 1){
-        targetted_attack = !targetted_attack;
-          int x_rand = int(random(0, 2));
-          int y_rand = int(random(0, 2));
-          switch(x_rand){
-            case 0: 
-              x_corner = 1;
-              break;
-            case 1:
-              x_corner = map.ny - 2;
-              break;
-            default: 
-              break;
-          }
-          switch(y_rand){
-            case 0: 
-              y_corner = 1;
-              break;
-            case 1:
-              y_corner = map.nx - 2;
-              break;
-            default: 
-              break;
-          }
-      }
-      */
-    }
     switch(type){
       case 0: 
-        if(targetted_attack){
-          blinky(pacman.x, pacman.y);
-        } else {
-
-          
-          //int x_corner = 1;//int(random(0, 1)): 1 ? map.nx -1;
-          //int y_corner = 1;//int(random(0, 1)): 1 ? map.ny -1;
-          blinky(x_corner, y_corner);
-        }
+        blinky();
         break;
       case 1:
         random_ghost();
@@ -86,20 +38,65 @@ class Ghost {
     } 
   }
   
-  void blinky(int _x, int _y){
-    pacman_location = new PVector(_x,_y);
+  /*void blinky(){
+    PVector pacman_location, ghost_location, ghost_target, difference;
+    pacman_location = new PVector(pacman.x,pacman.y);
     ghost_location  = new PVector(x,y);
     ghost_target    = new PVector(0,0);
     difference      = new PVector(0,0);
-
-    if(pacman_location.equals(ghost_location) && targetted_attack){
+    
+    difference      = PVector.sub(ghost_location, pacman_location);
+    
+    if(type == 1 && map.intersections[x][y] == 3 || map.intersections[x][y] == 0){
+      ghost_target = difference;
+      ghost_target.normalize();
+      if (abs(ghost_target.x) > abs(ghost_target.y)){
+        if (ghost_target.x<0 && map.intersections[x+1][y]!=1 ){
+          prex=1;prey=0;
+        } else if ( ghost_target.x>0 && map.intersections[x-1][y]!=1 ){
+          prex=-1; prey=0;
+        } else if ( map.intersections[x+1][y]!=1 ){
+          prex=1;prey=0;
+        } else {
+          prex=1;prey=0;
+        }
+      }
+      else{
+        if (ghost_target.y>0 && map.intersections[x][y-1]!=1){
+          prex=0;
+          prey=-1;
+        } else if (ghost_target.y<0 && map.intersections[x][y+1]!=1){
+          prex=0;
+          prey=1;
+        } else if (map.intersections[x][y-1]!=1){
+          prex=0;
+          prey=-1;
+        } else {
+          prex=0;
+          prey=1;
+        }
+      }
+    }
+    move(prex,prey);  
+  }*/
+  
+  void blinky(){
+    
+    pacman_location = new PVector(pacman.x,pacman.y);
+    ghost_location  = new PVector(x,y);
+    ghost_target    = new PVector(0,0);
+    difference      = new PVector(0,0);
+    if(pacman_location.equals(ghost_location)){
       pacman.reset();
     }
     // Gets the vector that points from Ghost to Pacman
+    //difference      = PVector.sub(pacman_location, ghost_location);
     difference        = PVector.sub(ghost_location, pacman_location);
+    
     
     stroke(0, 255, 0);
     line(pacman_location.x*w + (w/2), pacman_location.y*w + (w/2), ghost_location.x*w + (w/2), ghost_location.y*w + (w/2));
+    //line(ghost_location.x, ghost_location.y, ghost_location.x + difference.x, ghost_location.y + difference.y);
     noStroke();
     
     oprex=prex;
@@ -171,14 +168,11 @@ class Ghost {
         }
       }
     }
+    // 
+    if(frameCount%25==1){
+      move(prex,prey);
 
-
-
-    if(frameCount%25 == 1){
-        move(prex,prey);
     }
-    
-
     text("Blinky Direction: ", 75, 800);
     if(prex==1){
       text("right",175,800);
@@ -193,46 +187,52 @@ class Ghost {
       text("up", 175,800);
     }
     
-    facing_x = prex + int(ghost_location.x);
-    facing_y = prey + int(ghost_location.y);
+    //text(ghost_target.x,200,800);
+    //text(ghost_target.y,200,850);
+    //text(oprex,250,800);
+    //text(oprey,250,850);
+    //text(checker, 350, 800);
+      facing_x = prex + int(ghost_location.x);
+      facing_y = prey + int(ghost_location.y);
   }
       
 
   void random_ghost(){
     pacman_location = new PVector(pacman.x,pacman.y);
     ghost_location  = new PVector(x,y);
+    //print(x, y, "\n");
     if(pacman_location.equals(ghost_location)){
       pacman.reset();
       print("PACMAN AND RANDOM AT SAME LOCATION");
     }
    
-     boolean picked_direction = false;
-      if(map.intersections[y][x] == 3){
-        while(!picked_direction){
-          int random_direction = int(random(-0.5, 3.5));
-            if (random_direction == 0) {
-              prex = 0;
-              prey = -1;
-              picked_direction = check_up();
-            } else if (random_direction == 1) {
-              prex = 0;
-              prey = 1;
-              picked_direction = check_down();
-            } else if (random_direction == 2) {
-              prex = -1;
-              prey = 0;
-              picked_direction = check_left();
-            } else if (random_direction == 3) {
-              prex = 1;
-              prey = 0;
-              picked_direction = check_right();
-            } 
-        }
-      } else {
-  
-        //move(facing_x, facing_y);
+   boolean picked_direction = false;
+    if(map.intersections[y][x] == 3){
+      while(!picked_direction){
+        int random_direction = int(random(-0.5, 3.5));
+          if (random_direction == 0) {
+            prex = 0;
+            prey = -1;
+            picked_direction = check_up();
+          } else if (random_direction == 1) {
+            prex = 0;
+            prey = 1;
+            picked_direction = check_down();
+          } else if (random_direction == 2) {
+            prex = -1;
+            prey = 0;
+            picked_direction = check_left();
+          } else if (random_direction == 3) {
+            prex = 1;
+            prey = 0;
+            picked_direction = check_right();
+          } 
       }
-    
+    } else {
+
+      //move(facing_x, facing_y);
+    }
+    // 
     if(frameCount%25==1){
       move(prex,prey);
     }
@@ -250,8 +250,8 @@ class Ghost {
       text("up",325,800);
     }
     
-    facing_x = prex + int(ghost_location.x);
-    facing_y = prey + int(ghost_location.y);
+      facing_x = prex + int(ghost_location.x);
+      facing_y = prey + int(ghost_location.y);
   }
   
   void pinky(){
@@ -313,10 +313,10 @@ class Ghost {
         break;
     }
     
-     // Intersection or box - Ghost gets a new target
+      // Intersection or box - Ghost gets a new target
      // Intersection or box - Ghost gets a new target
     if(map.intersections[y][x] == 3 || map.intersections[y][x] == 0){
-     // If x component is larger than y, it should move horizontally.
+      // If x component is larger than y, it should move horizontally.
      ghost_target =  PVector.sub(ghost_location, ghost_target);
       if (abs(ghost_target.x) > abs(ghost_target.y)){
         if (ghost_target.x > 0 && map.intersections[y][x-1] != 1 
@@ -359,9 +359,12 @@ class Ghost {
       }
     }
     
+    
     stroke(0, 255, 0);
     line(ghost_target.x*w + (w/2), ghost_target.y*w + (w/2), ghost_location.x*w + (w/2), ghost_location.y*w + (w/2));
+    //line(ghost_location.x, ghost_location.y, ghost_location.x + difference.x, ghost_location.y + difference.y);
     noStroke();
+    
     
     if(frameCount % 25 == 0){
       move(prex,prey);  

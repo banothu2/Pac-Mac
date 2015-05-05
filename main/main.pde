@@ -15,21 +15,12 @@ Map map;
 PacMan pacman;
 QLearning QAgent;
 int NGHOSTS = 2;
-int NTEST = 0;
 ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
-int deaths[] = {0,0,0};
-float[][] value_right;
-float[][] value_left;
-float[][] value_up;
-float[][] value_down;
 
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
 boolean random_move = false;
 
-boolean random_move_ghost=false;
-
 int game_mode = -1;
-int a=1000;
 /*
   Game mode values: 
    -1  : No Model 
@@ -46,11 +37,10 @@ int pacman_start_x = 9;
 int pacman_start_y = 8;
 
 // Variables for Qlearning model 
-int nRLTrials = 0;
-int ntrials=0;
+int ntrials;
 float last_trial_reward;
 boolean showQ = false;
-int oldX, oldY;
+
 
 void setup(){
   map = new Map(w);
@@ -59,21 +49,9 @@ void setup(){
   size(700, 900);
   QAgent = new QLearning();
   size(game_width, game_height);
-  value_right= new float[a][a];
-  value_left= new float[a][a];
-  value_down= new float[a][a];
-  value_up= new float[a][a];
   for(Ghost g: ghosts){  
     g.attack();
   }  
-  for(int i=0;i<1000;i++){
-    for(int j=0;j<1000;j++){
-    value_right[i][j]=0;
-    value_left[i][j]=0;
-    value_down[i][j]=0;
-    value_up[i][j]=0;
-  }
-  }
 }
 
 void setup_bots(){
@@ -90,22 +68,15 @@ void draw(){
   stroke(0);
   map.display();
   pacman.display(); 
-  for(Ghost g: ghosts){ 
-    if(game_mode == 0){
-      if(nRLTrials > NTEST)
-        g.display();
-    }
-    else
-      g.display();
+  for(Ghost g: ghosts){  
+    g.display();
   }  
-  //if(frameCount%1000==0){random_move_ghost= !random_move_ghost;}
+  
   // Toggles between the various PacMan Playing models 
   switch(game_mode){
     case -1:
       break;
     case 0: 
-      if(nRLTrials > NTEST)
-        step_game();
       QAgent.step();
       break;
     case 1: 
@@ -113,13 +84,12 @@ void draw(){
       pacman.find_path();
       break;
     case 2: 
-      step_game();
-      pacman.solve();
+      //pacman.solve();
       break;
     default: 
       game_mode = -1;
       break;
-  }
+      
   /*
   int i=0;
   for(Ghost g: ghosts){
@@ -128,19 +98,15 @@ void draw(){
     i++;
   }
   */
+  text("Score: " + pacman.score, 25, 800);
+
   display_info();
 }
 
 void nextTrial(){
-  nRLTrials++;
-  if(pacman.alive != true)
-    deaths[game_mode]++;
   last_trial_reward = QAgent.summed_reward;
   QAgent.home();
   pacman.reset();
-  for(Ghost g: ghosts){  
-    g.reset();
-  }  
 }
 
 void next_move(){
@@ -167,21 +133,10 @@ void move_randomly(){
 
 void display_info(){
   text("Score: " + pacman.score, 0, 800);
-  if(game_mode == 0){
+  if(game_mode == 0)
     text("Reinforcement Learning Mode On", 0, 780);
-    if(nRLTrials > NTEST)
-      text("Ghosts ON", 250, 780);
-    else
-      text("Ghosts OFF", 250, 780);
-  }
   else
     text("Reinforcement Learning Mode Off", 0, 780);
-  if(game_mode != -1)
-    text("Deaths: " + deaths[game_mode], 350, 780);
-  text("l: switch to reinforcement learning mode", 600, 800);
-  text("h: switch to smart mode (avoid prey and get closest pellet", 600, 820);
-  text("v: switch to vector mode", 600, 840);
-  text("p: pause/run", 600, 860);
 }
 
 void keyPressed() {
@@ -199,21 +154,21 @@ void keyPressed() {
     paused = !paused;
   } else if (key == 'r') {
     random_move = !random_move;
+<<<<<<< HEAD
+=======
   } else if (key == 's') {
     step_game();
-  } else if (key == 'l' && game_mode != 0) {
-    map.level_one = map.level_zero_copy_RL;
-    oldX = pacman.x;
-    oldY = pacman.y;
+  } else if(key== 'v'){
+     vector_model=true;
+     human_model=false;
+>>>>>>> origin/master
+  } else if (key == 'l') {
     pacman.x = QAgent.ix;
     pacman.y = QAgent.iy;
-    game_mode = 0;
-  } else if (key == 'h' & game_mode != 1) {
+    game_mode = 0; 
+  } else if (key == 'h') {
     game_mode = 1;
-    map.level_one = map.level_zero;
-    pacman.x = oldX;
-    pacman.y = oldY;
-  } else if (key == 'v' && game_mode != 2) {
+  } else if (key == 'v') {
     game_mode = 2;
   } else if (key == 'i') {
     game_mode = -1;
