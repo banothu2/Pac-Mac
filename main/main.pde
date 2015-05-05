@@ -20,6 +20,8 @@ ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
 boolean random_move = false;
 
+boolean random_move_ghost=false;
+
 int game_mode = -1;
 /*
   Game mode values: 
@@ -84,12 +86,13 @@ void draw(){
       pacman.find_path();
       break;
     case 2: 
-      //pacman.solve();
+      step_game();
+      pacman.solve();
       break;
     default: 
       game_mode = -1;
       break;
-      
+  }
   /*
   int i=0;
   for(Ghost g: ghosts){
@@ -154,14 +157,8 @@ void keyPressed() {
     paused = !paused;
   } else if (key == 'r') {
     random_move = !random_move;
-<<<<<<< HEAD
-=======
   } else if (key == 's') {
     step_game();
-  } else if(key== 'v'){
-     vector_model=true;
-     human_model=false;
->>>>>>> origin/master
   } else if (key == 'l') {
     pacman.x = QAgent.ix;
     pacman.y = QAgent.iy;

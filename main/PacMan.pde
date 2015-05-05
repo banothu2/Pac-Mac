@@ -654,89 +654,109 @@ class PacMan {
   }
 
   
-  void solve(Ghost temp){
-     consume();
-      for(int i=1;i<5;i++){
-     if( (x+i) < map.nx && map.level_zero[y][x+i]==2){
-         pellets_right += map.level_zero[y][x+i];
-     }
-     if(x-i>map.nx && map.level_zero[y][x-i]==2){
-       pellets_left += map.level_zero[y][x-i];
-     }
-     if(y-i<map.ny && map.level_zero[y-i][x]==2){
-       pellets_up += map.level_zero[y-i][x];
-     }
-    if(y+i>map.ny && map.level_zero[y-i][x]==2){
-       pellets_down += map.level_zero[y+i][x];
+  void solve(){
+    //creates list of positions of ghosts
+    pellets_right=0;
+    pellets_left=0;
+    pellets_up=0;
+    pellets_down=0;
+    ArrayList<PVector> gpositions = new ArrayList<PVector>(NGHOSTS);
+    int counter_gpositions=0;
+    for(Ghost g: ghosts){  
+        gpositions.add(new PVector(g.x,g.y));
     }
+     consume();
+     //Calculates number of pellets in a radius of 4 units away from ghost
+     for(int i=1;i<5;i++){
+       if( (x+i) < map.ny){
+         if(map.level_zero[y][x+i]==2){
+           pellets_right += map.level_zero[y][x+i];
+         }
+       } 
+       if((x-i) > map.ny){
+         if( map.level_zero[y][x-i]==2){
+           pellets_left += map.level_zero[y][x-i];
+         }
+       }
+       if((y-i) > 0){
+         if(map.level_zero[y-i][x]==2){
+           pellets_up += map.level_zero[y-i][x];
+         }
+       }
+       if((y+i) < map.nx){
+         if( map.level_zero[y+i][x]==2){
+           pellets_down += map.level_zero[y+i][x];
+         }
+       }
     }
 
      pacman_location = new PVector(x,y);
-     ghost_location = new PVector(temp.x,temp.y);
+     ghost_location = gpositions.get(0);
      difference = PVector.sub(pacman_location, ghost_location);
      Pacman_target= new PVector(-difference.x,-difference.y);
      if(difference.mag()<10){
-     if (abs(Pacman_target.x) > abs(Pacman_target.y)){
-        if (Pacman_target.x >= 0 && check_left()){
-          prex = -1;
-          prey = 0;
-        } else if ( Pacman_target.x <= 0 && check_right()){
-          prex = 1; 
-          prey = 0;
-        } 
-        else if (Pacman_target.y >= 0 && check_up() ){
+       if (abs(Pacman_target.x) > abs(Pacman_target.y)){
+         if (Pacman_target.x >= 0 && check_left()){
+           prex = -1;
+           prey = 0;
+         } else if ( Pacman_target.x <= 0 && check_right()){
+           prex = 1; 
+           prey = 0;
+         } 
+         else if (Pacman_target.y >= 0 && check_up() ){
+           prex = 0;
+           prey = -1;
+         } else if (Pacman_target.y<=0 && check_down() ){
+           prex = 0;
+           prey = 1;
+         }
+          else if(check_up() ){
           prex = 0;
           prey = -1;
-        } else if (Pacman_target.y<=0 && check_down() ){
+         }
+          else if(check_down()){
           prex = 0;
           prey = 1;
+          }
+        } else {
+          if (Pacman_target.y >= 0 && check_up()){
+            prex = 0;
+            prey = -1;
+          } else if (Pacman_target.y<=0 && check_down()){
+            prex = 0;
+            prey = 1;
+          }
+          else if (Pacman_target.x >= 0 && check_left()){
+            prex = -1;
+            prey = 0;
+          } else if ( Pacman_target.x <= 0 && check_right() ){
+            prex = 1; 
+            prey = 0;
+          } 
+          else if(check_left()){
+            prex = -1;
+            prey = 0;
+          }
+          else if(check_right()){
+            prex = 1; 
+            prey = 0;
+          }
         }
-         else if(check_up() ){
-         prex = 0;
-         prey = -1;
-         }
-         else if(check_down()){
-         prex = 0;
-         prey = 1;
-         }
-      } else {
-        if (Pacman_target.y >= 0 && check_up()){
-          prex = 0;
-          prey = -1;
-        } else if (Pacman_target.y<=0 && check_down()){
-          prex = 0;
-          prey = 1;
-        }
-        else if (Pacman_target.x >= 0 && check_left()){
-          prex = -1;
-          prey = 0;
-        } else if ( Pacman_target.x <= 0 && check_right() ){
-          prex = 1; 
-          prey = 0;
-        } 
-        else if(check_left()){
-          prex = -1;
-          prey = 0;
-        }
-        else if(check_right()){
-          prex = 1; 
-          prey = 0;
-        }
-      }}
+      }
  else{
-    if(pellets_right>pellets_left&&pellets_right>pellets_down&&pellets_right>pellets_up){
+    if(pellets_right >= pellets_left && pellets_right >= pellets_down && pellets_right>=pellets_up){
           prex = 1; 
           prey = 0;  
     }
-        if(pellets_left>pellets_right&&pellets_left>pellets_down&&pellets_left>pellets_up){
+    else if(pellets_left>=pellets_right&&pellets_left>=pellets_down&&pellets_left>=pellets_up){
           prex = -1; 
           prey = 0;  
     }
-        if(pellets_up>pellets_left&&pellets_up>pellets_down&&pellets_up>pellets_right){
+    else if(pellets_up>=pellets_left && pellets_up>=pellets_down && pellets_up>=pellets_right){
           prex = 0; 
           prey = -1;  
     }
-    if(pellets_down>pellets_left&&pellets_down>pellets_right&&pellets_down>pellets_up){
+    else if(pellets_down>=pellets_left&&pellets_down>=pellets_right&&pellets_down>=pellets_up){
           prex = 0; 
           prey = 1;  
     }
