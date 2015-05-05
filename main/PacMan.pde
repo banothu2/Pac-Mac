@@ -2,7 +2,7 @@ class PacMan {
   int x;
   int y; 
   int r = 20; 
-  int w;                      // Cell size (pixels)
+  int w;                      
   int score;
   int movement_direction = -1;       // -1 = no movement. 0 = up, 1 = down, 2 = left, 3 = right
   boolean moving_one_block = false;
