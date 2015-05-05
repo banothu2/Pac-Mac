@@ -12,7 +12,7 @@ class PacMan {
   int[][] PacMap;
   int reset_x; 
   int reset_y;
-  PVector Pacman_target, difference,pacman_location,ghost_location;
+  PVector Pacman_target, difference,pacman_location,ghost_location, total_difference;
   int prex, prey;
   Ghost temp;
   int pellets_right, pellets_left, pellets_up, pellets_down;
@@ -284,6 +284,7 @@ class PacMan {
   
   void display_pacmap() {
     // Render the level
+    
     int map_rows = map.level_zero.length;    // Number of rows
     int map_columns = map.level_zero[0].length; 
     int offset_x = map_columns*w + 10;
@@ -322,27 +323,52 @@ class PacMan {
 
   
   void solve(){
-     consume();
-      for(int i=1;i<5;i++){
-     if( (x+i) < map.nx && map.level_zero[y][x+i]==2){
-         pellets_right += map.level_zero[y][x+i];
-     }
-     if(x-i>map.nx && map.level_zero[y][x-i]==2){
-       pellets_left += map.level_zero[y][x-i];
-     }
-     if(y-i<map.ny && map.level_zero[y-i][x]==2){
-       pellets_up += map.level_zero[y-i][x];
-     }
-    if(y+i>map.ny && map.level_zero[y-i][x]==2){
-       pellets_down += map.level_zero[y+i][x];
-    }
+    consume();
+    pacman_location = new PVector(x,y);
+    ArrayList<PVector> gpositions = new ArrayList<PVector>(NGHOSTS);
+    ArrayList<PVector> differences = new ArrayList<PVector>(NGHOSTS);
+    int counter_gpositions=0;
+    total_difference = new PVector(0,0);
+    for(Ghost g: ghosts){  
+        gpositions.add(new PVector(g.x,g.y));
     }
 
-     pacman_location = new PVector(x,y);
-     ghost_location = new PVector(temp.x,temp.y);
-     difference = PVector.sub(pacman_location, ghost_location);
-     Pacman_target= new PVector(-difference.x,-difference.y);
-     if(difference.mag()<10){
+     //Calculates number of pellets in a radius of 4 units away from ghost
+     for(int i=1;i<5;i++){
+       if( (x+i) < map.ny){
+         if(map.level_zero[y][x+i]==2){
+           pellets_right += map.level_zero[y][x+i];
+         }
+       } 
+       if((x-i) > map.ny){
+         if( map.level_zero[y][x-i]==2){
+           pellets_left += map.level_zero[y][x-i];
+         }
+       }
+       if((y-i) > 0){
+         if(map.level_zero[y-i][x]==2){
+           pellets_up += map.level_zero[y-i][x];
+         }
+       }
+       if((y+i) < map.nx){
+         if( map.level_zero[y+i][x]==2){
+           pellets_down += map.level_zero[y+i][x];
+         }
+       }
+    }
+
+    for(int i=0;i<NGHOSTS;i++){
+      difference = PVector.sub(pacman_location, gpositions.get(0));
+      differences.add(new PVector(difference.x,difference.y));
+      total_difference.add(differences.get(i));
+    }
+    
+    total_difference.normalize();
+    Pacman_target= new PVector(-total_difference.x,-total_difference.y);
+    
+     
+
+     if(total_difference.mag()<10){
      if (abs(Pacman_target.x) > abs(Pacman_target.y)){
         if (Pacman_target.x >= 0 && check_left()){
           prex = -1;
