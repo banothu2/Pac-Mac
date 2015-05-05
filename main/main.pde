@@ -16,6 +16,10 @@ PacMan pacman;
 QLearning QAgent;
 int NGHOSTS = 2;
 ArrayList<Ghost> ghosts = new ArrayList<Ghost>(NGHOSTS);
+float[][] value_right;
+float[][] value_left;
+float[][] value_up;
+float[][] value_down;
 
 int EAST = 0, SOUTH = 1, WEST = 2, NORTH = 3;
 boolean random_move = false;
@@ -23,6 +27,7 @@ boolean random_move = false;
 boolean random_move_ghost=false;
 
 int game_mode = -1;
+int a=1000;
 /*
   Game mode values: 
    -1  : No Model 
@@ -39,7 +44,7 @@ int pacman_start_x = 9;
 int pacman_start_y = 8;
 
 // Variables for Qlearning model 
-int ntrials;
+int ntrials=0;;
 float last_trial_reward;
 boolean showQ = false;
 
@@ -51,9 +56,21 @@ void setup(){
   size(700, 900);
   QAgent = new QLearning();
   size(game_width, game_height);
+  value_right= new float[a][a];
+  value_left= new float[a][a];
+  value_down= new float[a][a];
+  value_up= new float[a][a];
   for(Ghost g: ghosts){  
     g.attack();
   }  
+  for(int i=0;i<1000;i++){
+    for(int j=0;j<1000;j++){
+    value_right[i][j]=0;
+    value_left[i][j]=0;
+    value_down[i][j]=0;
+    value_up[i][j]=0;
+  }
+  }
 }
 
 void setup_bots(){
@@ -73,7 +90,7 @@ void draw(){
   for(Ghost g: ghosts){  
     g.display();
   }  
-  if(frameCount%1000==0){random_move_ghost= !random_move_ghost;}
+  //if(frameCount%1000==0){random_move_ghost= !random_move_ghost;}
   // Toggles between the various PacMan Playing models 
   switch(game_mode){
     case -1:
