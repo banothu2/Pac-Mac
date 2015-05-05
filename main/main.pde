@@ -23,6 +23,8 @@ int w = 50;
 boolean showQ = false;
 boolean random_move = false;
 boolean rLearningMode = false;
+int deaths = 0;
+int oldX, oldY;
 
 void setup(){
   map = new Map(w);
@@ -68,15 +70,20 @@ void draw(){
     pacman.find_path();
   }
   else{
+    step_game();
     QAgent.step();
   }
   display_info();
 }
 
 void nextTrial(){
+  deaths++;
   last_trial_reward = QAgent.summed_reward;
   QAgent.home();
   pacman.reset();
+  for(Ghost g: ghosts){  
+    g.reset();
+  }  
 }
 
 void next_move(){
@@ -107,6 +114,7 @@ void display_info(){
     text("Reinforcement Learning Mode On", 0, 780);
   else
     text("Reinforcement Learning Mode Off", 0, 780);
+  text("Deaths: " + deaths, 250, 780);
 }
 
 void keyPressed() {
@@ -127,8 +135,18 @@ void keyPressed() {
   } else if (key == 's') {
     step_game();
   } else if (key == 'l') {
-    pacman.x = QAgent.ix;
-    pacman.y = QAgent.iy;
+    if(rLearningMode == false){
+      map.level_one = map.level_zero_copy_RL;
+      oldX = pacman.x;
+      oldY = pacman.y;
+      pacman.x = QAgent.ix;
+      pacman.y = QAgent.iy;
+    }
+    else{
+      map.level_one = map.level_zero;
+      pacman.x = oldX;
+      pacman.y = oldY;
+    }
     rLearningMode = !rLearningMode;
   } else if (key == 'q') {
     showQ = !showQ;

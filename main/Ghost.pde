@@ -6,14 +6,15 @@ class Ghost {
   int type;                 // Red = 0, Pink = 1, Blue = 2, Green = 3
   int prex, prey, prexi, preyi, oprex, oprey, checker; //used so ghost follows a command till it reaches intersection
   int padding; 
-  
-  int facing_x; 
-  int facing_y;
+  int facing_x, facing_y;
+  int startX, startY;
   
   PVector pacman_location, blinky_location, ghost_location, ghost_target, difference1, difference2, difference;
   Ghost(int _type, int _x, int _y, int _r, int _w){
     x = _x;
     y = _y;
+    startX = _x;
+    startY = _y;
     r = _r;
     w = _w;
     type = _type;
@@ -21,6 +22,11 @@ class Ghost {
   
   void update(int _x, int _y){
     move(_x, _y);
+  }
+  
+  void reset(){
+    x = startX;
+    y = startY;
   }
   
   void attack(){
@@ -81,7 +87,6 @@ class Ghost {
   }*/
   
   void blinky(){
-    
     pacman_location = new PVector(pacman.x,pacman.y);
     ghost_location  = new PVector(x,y);
     ghost_target    = new PVector(0,0);
@@ -206,52 +211,52 @@ class Ghost {
       print("PACMAN AND RANDOM AT SAME LOCATION");
     }
    
-   boolean picked_direction = false;
-    if(map.intersections[y][x] == 3){
-      while(!picked_direction){
-        int random_direction = int(random(-0.5, 3.5));
-          if (random_direction == 0) {
-            prex = 0;
-            prey = -1;
-            picked_direction = check_up();
-          } else if (random_direction == 1) {
-            prex = 0;
-            prey = 1;
-            picked_direction = check_down();
-          } else if (random_direction == 2) {
-            prex = -1;
-            prey = 0;
-            picked_direction = check_left();
-          } else if (random_direction == 3) {
-            prex = 1;
-            prey = 0;
-            picked_direction = check_right();
-          } 
+     boolean picked_direction = false;
+      if(map.intersections[y][x] == 3){
+        while(!picked_direction){
+          int random_direction = int(random(-0.5, 3.5));
+            if (random_direction == 0) {
+              prex = 0;
+              prey = -1;
+              picked_direction = check_up();
+            } else if (random_direction == 1) {
+              prex = 0;
+              prey = 1;
+              picked_direction = check_down();
+            } else if (random_direction == 2) {
+              prex = -1;
+              prey = 0;
+              picked_direction = check_left();
+            } else if (random_direction == 3) {
+              prex = 1;
+              prey = 0;
+              picked_direction = check_right();
+            } 
+        }
+      } else {
+  
+        //move(facing_x, facing_y);
       }
-    } else {
-
-      //move(facing_x, facing_y);
-    }
-    // 
-    if(frameCount%25==1){
-      move(prex,prey);
-    }
-    text("Pinky Direction: ", 225,800);
-    if(prex==1){
-      text("right",325,800);
-    }
-    if(prex==-1){
-      text("left",325,800);
-    }
-    if(prey==1){
-      text("down",325,800);
-    }
-    if(prey==-1){
-      text("up",325,800);
-    }
-    
-      facing_x = prex + int(ghost_location.x);
-      facing_y = prey + int(ghost_location.y);
+      // 
+      if(frameCount%25==1){
+        move(prex,prey);
+      }
+      text("Pinky Direction: ", 225,800);
+      if(prex==1){
+        text("right",325,800);
+      }
+      if(prex==-1){
+        text("left",325,800);
+      }
+      if(prey==1){
+        text("down",325,800);
+      }
+      if(prey==-1){
+        text("up",325,800);
+      }
+      
+        facing_x = prex + int(ghost_location.x);
+        facing_y = prey + int(ghost_location.y);
   }
   
   void pinky(){
